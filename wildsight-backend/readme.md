@@ -19,6 +19,7 @@ AI-powered Wildlife Monitoring and Biodiversity Assessment System.
 - Wildlife Monitoring
 - Species Detection
 - Audio Analysis
+
 - Image Analysis
 - Biodiversity Assessment
 - Reports
