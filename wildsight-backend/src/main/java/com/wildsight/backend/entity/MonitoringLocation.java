@@ -18,8 +18,9 @@ public class MonitoringLocation {
     @Column(name = "location_id")
     private Long locationId;
 
-    @Column(name = "survey_id", nullable = false)
-    private Long surveyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_id", nullable = false)
+    private Survey survey;
 
     @Column(name = "location_name")
     private String locationName;
@@ -30,9 +31,12 @@ public class MonitoringLocation {
     @Column(name = "longitude", precision = 10, scale = 7)
     private BigDecimal longitude;
 
+    @Column(name = "district")
     private String district;
 
+    @Column(name = "state")
     private String state;
 
+    @Column(name = "country")
     private String country;
 }
