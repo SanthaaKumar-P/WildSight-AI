@@ -46,9 +46,11 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         user = userRepository.save(user);
-
-        Role role = roleRepository.findByRoleName("USER")
-                .orElseThrow(() -> new RuntimeException("USER role not found"));
+        if ("ADMIN".equalsIgnoreCase(request.getRole())) {
+    throw new RuntimeException("Admin registration is not allowed.");
+        }
+        Role role = roleRepository.findByRoleName(request.getRole().toUpperCase())
+        .orElseThrow(() -> new RuntimeException("Role not found"));
 
         UserRole userRole = UserRole.builder()
                 .user(user)
