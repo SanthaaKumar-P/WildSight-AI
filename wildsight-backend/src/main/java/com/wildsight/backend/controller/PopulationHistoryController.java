@@ -6,17 +6,25 @@ import com.wildsight.backend.service.PopulationHistoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/population-history")
 @RequiredArgsConstructor
+@Tag(
+    name = "Population History Management",
+    description = "APIs for managing population history"
+)
+@SecurityRequirement(name = "Bearer Authentication")
 @CrossOrigin(origins = "*")
 public class PopulationHistoryController {
 
     private final PopulationHistoryService populationHistoryService;
 
+    @Operation(summary = "Create population history")
     @PostMapping
     public PopulationHistoryResponse createHistory(
             @Valid @RequestBody PopulationHistoryRequest request) {
@@ -24,12 +32,14 @@ public class PopulationHistoryController {
         return populationHistoryService.createHistory(request);
     }
 
+    @Operation(summary = "Get all population history")
     @GetMapping
     public List<PopulationHistoryResponse> getAllHistory() {
 
         return populationHistoryService.getAllHistory();
     }
 
+    @Operation(summary = "Get population history by ID")
     @GetMapping("/{id}")
     public PopulationHistoryResponse getHistoryById(
             @PathVariable Long id) {
@@ -37,6 +47,7 @@ public class PopulationHistoryController {
         return populationHistoryService.getHistoryById(id);
     }
 
+    @Operation(summary = "Update population history")
     @PutMapping("/{id}")
     public PopulationHistoryResponse updateHistory(
             @PathVariable Long id,
@@ -45,6 +56,7 @@ public class PopulationHistoryController {
         return populationHistoryService.updateHistory(id, request);
     }
 
+    @Operation(summary = "Delete population history")
     @DeleteMapping("/{id}")
     public String deleteHistory(
             @PathVariable Long id) {

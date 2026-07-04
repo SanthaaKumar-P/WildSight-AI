@@ -6,17 +6,25 @@ import com.wildsight.backend.service.EndangeredSpeciesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/endangered-species")
 @RequiredArgsConstructor
+@Tag(
+    name = "Endangered Species Management",
+    description = "APIs for managing endangered species"
+)
+@SecurityRequirement(name = "Bearer Authentication")
 @CrossOrigin(origins = "*")
 public class EndangeredSpeciesController {
 
     private final EndangeredSpeciesService endangeredSpeciesService;
-
+    
+    @Operation(summary = "Create endangered species")
     @PostMapping
     public EndangeredSpeciesResponse createEndangeredSpecies(
             @Valid @RequestBody EndangeredSpeciesRequest request) {
@@ -24,12 +32,14 @@ public class EndangeredSpeciesController {
         return endangeredSpeciesService.createEndangeredSpecies(request);
     }
 
+    @Operation(summary = "Get all endangered species")
     @GetMapping
     public List<EndangeredSpeciesResponse> getAllEndangeredSpecies() {
 
         return endangeredSpeciesService.getAllEndangeredSpecies();
     }
 
+    @Operation(summary = "Get endangered species by ID")
     @GetMapping("/{id}")
     public EndangeredSpeciesResponse getEndangeredSpeciesById(
             @PathVariable Long id) {
@@ -37,6 +47,7 @@ public class EndangeredSpeciesController {
         return endangeredSpeciesService.getEndangeredSpeciesById(id);
     }
 
+    @Operation(summary = "Update endangered species")
     @PutMapping("/{id}")
     public EndangeredSpeciesResponse updateEndangeredSpecies(
             @PathVariable Long id,
@@ -45,6 +56,7 @@ public class EndangeredSpeciesController {
         return endangeredSpeciesService.updateEndangeredSpecies(id, request);
     }
 
+    @Operation(summary = "Delete endangered species")
     @DeleteMapping("/{id}")
     public String deleteEndangeredSpecies(
             @PathVariable Long id) {

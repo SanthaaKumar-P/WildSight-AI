@@ -6,17 +6,25 @@ import com.wildsight.backend.service.PopulationEstimateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/population-estimates")
 @RequiredArgsConstructor
+@Tag(
+    name = "Population Estimate Management",
+    description = "APIs for managing population estimates"
+)
+@SecurityRequirement(name = "Bearer Authentication")
 @CrossOrigin(origins = "*")
 public class PopulationEstimateController {
 
     private final PopulationEstimateService populationEstimateService;
 
+    @Operation(summary = "Create population estimate")
     @PostMapping
     public PopulationEstimateResponse createEstimate(
             @Valid @RequestBody PopulationEstimateRequest request) {
@@ -24,12 +32,14 @@ public class PopulationEstimateController {
         return populationEstimateService.createEstimate(request);
     }
 
+    @Operation(summary = "Get all population estimates")
     @GetMapping
     public List<PopulationEstimateResponse> getAllEstimates() {
 
         return populationEstimateService.getAllEstimates();
     }
 
+    @Operation(summary = "Get population estimate by ID")
     @GetMapping("/{id}")
     public PopulationEstimateResponse getEstimateById(
             @PathVariable Long id) {
@@ -37,6 +47,7 @@ public class PopulationEstimateController {
         return populationEstimateService.getEstimateById(id);
     }
 
+    @Operation(summary = "Update population estimate")
     @PutMapping("/{id}")
     public PopulationEstimateResponse updateEstimate(
             @PathVariable Long id,
@@ -45,6 +56,7 @@ public class PopulationEstimateController {
         return populationEstimateService.updateEstimate(id, request);
     }
 
+    @Operation(summary = "Delete population estimate")
     @DeleteMapping("/{id}")
     public String deleteEstimate(
             @PathVariable Long id) {

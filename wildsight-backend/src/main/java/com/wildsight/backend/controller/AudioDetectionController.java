@@ -6,17 +6,25 @@ import com.wildsight.backend.service.AudioDetectionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/audio-detections")
 @RequiredArgsConstructor
+@Tag(
+    name = "Audio Detection Management",
+    description = "APIs for managing audio detections"
+)
+@SecurityRequirement(name = "Bearer Authentication")
 @CrossOrigin(origins = "*")
 public class AudioDetectionController {
 
     private final AudioDetectionService audioDetectionService;
-
+    
+    @Operation(summary = "Create audio detection")
     @PostMapping
     public AudioDetectionResponse createDetection(
             @Valid @RequestBody AudioDetectionRequest request) {
@@ -24,12 +32,14 @@ public class AudioDetectionController {
         return audioDetectionService.createDetection(request);
     }
 
+    @Operation(summary = "Get all audio detections")
     @GetMapping
     public List<AudioDetectionResponse> getAllDetections() {
 
         return audioDetectionService.getAllDetections();
     }
 
+    @Operation(summary = "Get audio detection by ID")
     @GetMapping("/{id}")
     public AudioDetectionResponse getDetectionById(
             @PathVariable Long id) {
@@ -37,6 +47,7 @@ public class AudioDetectionController {
         return audioDetectionService.getDetectionById(id);
     }
 
+    @Operation(summary = "Update audio detection")
     @PutMapping("/{id}")
     public AudioDetectionResponse updateDetection(
             @PathVariable Long id,
@@ -45,6 +56,7 @@ public class AudioDetectionController {
         return audioDetectionService.updateDetection(id, request);
     }
 
+    @Operation(summary = "Delete audio detection")
     @DeleteMapping("/{id}")
     public String deleteDetection(
             @PathVariable Long id) {

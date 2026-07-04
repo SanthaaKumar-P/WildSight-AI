@@ -9,7 +9,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,10 +21,16 @@ import java.util.List;
 @RequestMapping("/api/uploaded-audio")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(
+    name = "Uploaded Audio Management",
+    description = "APIs for managing uploaded audio"
+)
+@SecurityRequirement(name = "Bearer Authentication")
 public class UploadedAudioController {
 
     private final UploadedAudioService uploadedAudioService;
-
+    
+    @Operation(summary = "Create uploaded audio")
     @PostMapping
     public UploadedAudioResponse createAudio(
             @Valid @RequestBody UploadedAudioRequest request) {
@@ -30,12 +38,14 @@ public class UploadedAudioController {
         return uploadedAudioService.uploadAudio(request);
     }
 
+    @Operation(summary = "Get all uploaded audio")
     @GetMapping
     public List<UploadedAudioResponse> getAllAudio() {
 
         return uploadedAudioService.getAllAudio();
     }
 
+    @Operation(summary = "Get uploaded audio by ID")
     @GetMapping("/{id}")
     public UploadedAudioResponse getAudioById(
             @PathVariable Long id) {
@@ -43,6 +53,7 @@ public class UploadedAudioController {
         return uploadedAudioService.getAudioById(id);
     }
 
+    @Operation(summary = "Update uploaded audio")
     @PutMapping("/{id}")
     public UploadedAudioResponse updateAudio(
             @PathVariable Long id,
@@ -51,6 +62,7 @@ public class UploadedAudioController {
         return uploadedAudioService.updateAudio(id, request);
     }
 
+    @Operation(summary = "Delete uploaded audio")
     @DeleteMapping("/{id}")
     public String deleteAudio(
             @PathVariable Long id) {
@@ -59,7 +71,8 @@ public class UploadedAudioController {
 
         return "Uploaded Audio deleted successfully";
     }
-
+    
+    @Operation(summary = "Upload audio file")
     @PostMapping(
             value = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE

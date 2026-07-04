@@ -32,8 +32,11 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
-        }
+
+    throw new RuntimeException(
+            "An account already exists with this email."
+    );
+}
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -47,8 +50,11 @@ public class AuthServiceImpl implements AuthService {
 
         user = userRepository.save(user);
         if ("ADMIN".equalsIgnoreCase(request.getRole())) {
-    throw new RuntimeException("Admin registration is not allowed.");
-        }
+
+    throw new RuntimeException(
+            "Admin registration is not allowed. Please contact the system administrator."
+    );
+}
         Role role = roleRepository.findByRoleName(request.getRole().toUpperCase())
         .orElseThrow(() -> new RuntimeException("Role not found"));
 
