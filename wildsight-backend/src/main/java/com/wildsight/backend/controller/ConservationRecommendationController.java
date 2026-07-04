@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/conservation-recommendations")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class ConservationRecommendationController {
     private final ConservationRecommendationService recommendationService;
 
     @Operation(summary = "Create conservation recommendation")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public ConservationRecommendationResponse createRecommendation(
             @Valid @RequestBody ConservationRecommendationRequest request) {
@@ -33,6 +34,7 @@ public class ConservationRecommendationController {
     }
 
     @Operation(summary = "Get all conservation recommendations")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<ConservationRecommendationResponse> getAllRecommendations() {
 
@@ -40,6 +42,7 @@ public class ConservationRecommendationController {
     }
 
     @Operation(summary = "Get conservation recommendation by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ConservationRecommendationResponse getRecommendationById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class ConservationRecommendationController {
     }
 
     @Operation(summary = "Update conservation recommendation")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public ConservationRecommendationResponse updateRecommendation(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class ConservationRecommendationController {
     }
 
     @Operation(summary = "Delete conservation recommendation")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteRecommendation(
             @PathVariable Long id) {

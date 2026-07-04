@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/report-exports")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class ReportExportController {
     private final ReportExportService reportExportService;
     
     @Operation(summary = "Create report export")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @PostMapping
     public ReportExportResponse createExport(
             @Valid @RequestBody ReportExportRequest request) {
@@ -33,6 +34,7 @@ public class ReportExportController {
     }
 
     @Operation(summary = "Get all report exports")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @GetMapping
     public List<ReportExportResponse> getAllExports() {
 
@@ -40,6 +42,7 @@ public class ReportExportController {
     }
 
     @Operation(summary = "Get report export by ID")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @GetMapping("/{id}")
     public ReportExportResponse getExportById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class ReportExportController {
     }
 
     @Operation(summary = "Update report export")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public ReportExportResponse updateExport(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class ReportExportController {
     }
 
     @Operation(summary = "Delete report export")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteExport(
             @PathVariable Long id) {

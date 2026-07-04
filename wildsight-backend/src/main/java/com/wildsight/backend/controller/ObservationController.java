@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/observations")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class ObservationController {
     private final ObservationService observationService;
 
     @Operation(summary = "Create observation")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER','VOLUNTEER')")
     @PostMapping
     public ObservationResponse createObservation(
             @Valid @RequestBody ObservationRequest request) {
@@ -33,6 +34,7 @@ public class ObservationController {
     }
 
     @Operation(summary = "Get all observations")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<ObservationResponse> getAllObservations() {
 
@@ -40,6 +42,7 @@ public class ObservationController {
     }
 
     @Operation(summary = "Get observation by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ObservationResponse getObservationById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class ObservationController {
     }
 
     @Operation(summary = "Update observation")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @PutMapping("/{id}")
     public ObservationResponse updateObservation(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class ObservationController {
     }
 
     @Operation(summary = "Delete observation")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteObservation(
             @PathVariable Long id) {

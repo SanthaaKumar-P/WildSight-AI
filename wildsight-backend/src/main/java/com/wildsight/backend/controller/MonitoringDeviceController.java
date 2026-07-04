@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/monitoring-devices")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class MonitoringDeviceController {
     private final MonitoringDeviceService monitoringDeviceService;
     
     @Operation(summary = "Create monitoring device")
+    @PreAuthorize("hasAnyRole('ADMIN','FOREST_OFFICER')")
     @PostMapping
     public MonitoringDeviceResponse createDevice(
             @Valid @RequestBody MonitoringDeviceRequest request) {
@@ -33,6 +34,7 @@ public class MonitoringDeviceController {
     }
 
     @Operation(summary = "Get all monitoring devices")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<MonitoringDeviceResponse> getAllDevices() {
 
@@ -40,6 +42,7 @@ public class MonitoringDeviceController {
     }
 
     @Operation(summary = "Get monitoring device by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public MonitoringDeviceResponse getDeviceById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class MonitoringDeviceController {
     }
 
     @Operation(summary = "Update monitoring device")
+    @PreAuthorize("hasAnyRole('ADMIN','FOREST_OFFICER')")
     @PutMapping("/{id}")
     public MonitoringDeviceResponse updateDevice(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class MonitoringDeviceController {
     }
 
     @Operation(summary = "Delete monitoring device")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteDevice(
             @PathVariable Long id) {

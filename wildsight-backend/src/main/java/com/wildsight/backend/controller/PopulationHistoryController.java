@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/population-history")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class PopulationHistoryController {
     private final PopulationHistoryService populationHistoryService;
 
     @Operation(summary = "Create population history")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public PopulationHistoryResponse createHistory(
             @Valid @RequestBody PopulationHistoryRequest request) {
@@ -33,6 +34,7 @@ public class PopulationHistoryController {
     }
 
     @Operation(summary = "Get all population history")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<PopulationHistoryResponse> getAllHistory() {
 
@@ -40,6 +42,7 @@ public class PopulationHistoryController {
     }
 
     @Operation(summary = "Get population history by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public PopulationHistoryResponse getHistoryById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class PopulationHistoryController {
     }
 
     @Operation(summary = "Update population history")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public PopulationHistoryResponse updateHistory(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class PopulationHistoryController {
     }
 
     @Operation(summary = "Delete population history")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteHistory(
             @PathVariable Long id) {

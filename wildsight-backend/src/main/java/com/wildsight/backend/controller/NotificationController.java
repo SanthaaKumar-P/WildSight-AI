@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class NotificationController {
     private final NotificationService notificationService;
     
     @Operation(summary = "Create notification")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public NotificationResponse createNotification(
             @Valid @RequestBody NotificationRequest request) {
@@ -33,6 +34,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Get all notifications")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<NotificationResponse> getAllNotifications() {
 
@@ -40,6 +42,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Get notification by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public NotificationResponse getNotificationById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Update notification")
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
     public NotificationResponse updateNotification(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Delete notification")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteNotification(
             @PathVariable Long id) {

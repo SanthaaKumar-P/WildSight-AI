@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/monitoring-locations")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class MonitoringLocationController {
     private final MonitoringLocationService monitoringLocationService;
 
     @Operation(summary = "Create monitoring location")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @PostMapping
     public MonitoringLocationResponse createLocation(
             @Valid @RequestBody MonitoringLocationRequest request) {
@@ -33,6 +34,7 @@ public class MonitoringLocationController {
     }
 
     @Operation(summary = "Get all monitoring locations")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<MonitoringLocationResponse> getAllLocations() {
 
@@ -40,6 +42,7 @@ public class MonitoringLocationController {
     }
 
     @Operation(summary = "Get monitoring location by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public MonitoringLocationResponse getLocationById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class MonitoringLocationController {
     }
 
     @Operation(summary = "Update monitoring location")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @PutMapping("/{id}")
     public MonitoringLocationResponse updateLocation(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class MonitoringLocationController {
     }
 
     @Operation(summary = "Delete monitoring location")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteLocation(@PathVariable Long id) {
 

@@ -3,7 +3,7 @@ package com.wildsight.backend.controller;
 import com.wildsight.backend.dto.SpeciesCategoryRequest;
 import com.wildsight.backend.dto.SpeciesCategoryResponse;
 import com.wildsight.backend.service.SpeciesCategoryService;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,7 @@ public class SpeciesCategoryController {
     private final SpeciesCategoryService service;
 
    @Operation(summary = "Create species category")
+@PreAuthorize("hasRole('ADMIN')")
 @PostMapping
 public SpeciesCategoryResponse createCategory(
         @Valid @RequestBody SpeciesCategoryRequest request) {
@@ -34,6 +35,7 @@ public SpeciesCategoryResponse createCategory(
 }
 
     @Operation(summary = "Get all species categories")
+@PreAuthorize("isAuthenticated()")
 @GetMapping
     public List<SpeciesCategoryResponse> getAllCategories() {
 
@@ -41,6 +43,7 @@ public SpeciesCategoryResponse createCategory(
     }
 
    @Operation(summary = "Get species category by ID")
+@PreAuthorize("isAuthenticated()")
 @GetMapping("/{id}")
     public SpeciesCategoryResponse getCategoryById(
             @PathVariable Long id) {
@@ -49,6 +52,7 @@ public SpeciesCategoryResponse createCategory(
     }
 
     @Operation(summary = "Update species category")
+@PreAuthorize("isAuthenticated()")
 @PutMapping("/{id}")
 public SpeciesCategoryResponse updateCategory(
         @PathVariable Long id,
@@ -58,6 +62,7 @@ public SpeciesCategoryResponse updateCategory(
 }
 
    @Operation(summary = "Delete species category")
+   @PreAuthorize("hasRole('ADMIN')")
 @DeleteMapping("/{id}")
     public String deleteCategory(
             @PathVariable Long id) {

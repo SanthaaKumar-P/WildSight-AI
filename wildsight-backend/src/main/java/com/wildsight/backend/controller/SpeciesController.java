@@ -1,5 +1,5 @@
 package com.wildsight.backend.controller;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.wildsight.backend.dto.SpeciesRequest;
 import com.wildsight.backend.dto.SpeciesResponse;
 import com.wildsight.backend.service.SpeciesService;
@@ -23,7 +23,7 @@ import java.util.List;
 public class SpeciesController {
 
     private final SpeciesService speciesService;
-
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @Operation(summary = "Create species")
     @PostMapping
     public SpeciesResponse createSpecies(
@@ -31,14 +31,16 @@ public class SpeciesController {
 
         return speciesService.createSpecies(request);
     }
-
+    
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get all species")
     @GetMapping
     public List<SpeciesResponse> getAllSpecies() {
 
         return speciesService.getAllSpecies();
     }
-
+    
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Get species by ID")
     @GetMapping("/{id}")
     public SpeciesResponse getSpeciesById(
@@ -46,7 +48,8 @@ public class SpeciesController {
 
         return speciesService.getSpeciesById(id);
     }
-
+    
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @Operation(summary = "Update species")
     @PutMapping("/{id}")
     public SpeciesResponse updateSpecies(
@@ -55,7 +58,7 @@ public class SpeciesController {
 
         return speciesService.updateSpecies(id, request);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete species")
     @DeleteMapping("/{id}")
     public String deleteSpecies(

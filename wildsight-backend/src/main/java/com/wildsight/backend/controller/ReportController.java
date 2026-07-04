@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @Operation(summary = "Create report")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public ReportResponse createReport(
             @Valid @RequestBody ReportRequest request) {
@@ -33,6 +34,7 @@ public class ReportController {
     }
 
     @Operation(summary = "Get all reports")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @GetMapping
     public List<ReportResponse> getAllReports() {
 
@@ -40,6 +42,7 @@ public class ReportController {
     }
 
     @Operation(summary = "Get report by ID")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
     @GetMapping("/{id}")
     public ReportResponse getReportById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class ReportController {
     }
 
     @Operation(summary = "Update report")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}")
     public ReportResponse updateReport(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class ReportController {
     }
 
     @Operation(summary = "Delete report")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteReport(
             @PathVariable Long id) {

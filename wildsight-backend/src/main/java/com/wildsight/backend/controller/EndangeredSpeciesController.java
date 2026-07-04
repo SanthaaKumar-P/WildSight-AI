@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/endangered-species")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class EndangeredSpeciesController {
     private final EndangeredSpeciesService endangeredSpeciesService;
     
     @Operation(summary = "Create endangered species")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public EndangeredSpeciesResponse createEndangeredSpecies(
             @Valid @RequestBody EndangeredSpeciesRequest request) {
@@ -33,6 +34,7 @@ public class EndangeredSpeciesController {
     }
 
     @Operation(summary = "Get all endangered species")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<EndangeredSpeciesResponse> getAllEndangeredSpecies() {
 
@@ -40,6 +42,7 @@ public class EndangeredSpeciesController {
     }
 
     @Operation(summary = "Get endangered species by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public EndangeredSpeciesResponse getEndangeredSpeciesById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class EndangeredSpeciesController {
     }
 
     @Operation(summary = "Update endangered species")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public EndangeredSpeciesResponse updateEndangeredSpecies(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class EndangeredSpeciesController {
     }
 
     @Operation(summary = "Delete endangered species")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteEndangeredSpecies(
             @PathVariable Long id) {

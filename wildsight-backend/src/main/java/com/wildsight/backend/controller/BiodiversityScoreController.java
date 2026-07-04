@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/biodiversity-scores")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class BiodiversityScoreController {
     private final BiodiversityScoreService biodiversityScoreService;
 
     @Operation(summary = "Create biodiversity score")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public BiodiversityScoreResponse createScore(
             @Valid @RequestBody BiodiversityScoreRequest request) {
@@ -33,6 +34,7 @@ public class BiodiversityScoreController {
     }
 
     @Operation(summary = "Get all biodiversity scores")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<BiodiversityScoreResponse> getAllScores() {
 
@@ -40,6 +42,7 @@ public class BiodiversityScoreController {
     }
 
     @Operation(summary = "Get biodiversity score by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public BiodiversityScoreResponse getScoreById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class BiodiversityScoreController {
     }
 
     @Operation(summary = "Update biodiversity score")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public BiodiversityScoreResponse updateScore(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class BiodiversityScoreController {
     }
 
     @Operation(summary = "Delete biodiversity score")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteScore(
             @PathVariable Long id) {

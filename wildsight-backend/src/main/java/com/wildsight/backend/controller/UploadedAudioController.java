@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/uploaded-audio")
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class UploadedAudioController {
     private final UploadedAudioService uploadedAudioService;
     
     @Operation(summary = "Create uploaded audio")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER','VOLUNTEER')")
     @PostMapping
     public UploadedAudioResponse createAudio(
             @Valid @RequestBody UploadedAudioRequest request) {
@@ -39,6 +40,7 @@ public class UploadedAudioController {
     }
 
     @Operation(summary = "Get all uploaded audio")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<UploadedAudioResponse> getAllAudio() {
 
@@ -46,6 +48,7 @@ public class UploadedAudioController {
     }
 
     @Operation(summary = "Get uploaded audio by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public UploadedAudioResponse getAudioById(
             @PathVariable Long id) {
@@ -54,6 +57,7 @@ public class UploadedAudioController {
     }
 
     @Operation(summary = "Update uploaded audio")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public UploadedAudioResponse updateAudio(
             @PathVariable Long id,
@@ -63,6 +67,7 @@ public class UploadedAudioController {
     }
 
     @Operation(summary = "Delete uploaded audio")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteAudio(
             @PathVariable Long id) {
@@ -73,6 +78,7 @@ public class UploadedAudioController {
     }
     
     @Operation(summary = "Upload audio file")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER','VOLUNTEER')")
     @PostMapping(
             value = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE

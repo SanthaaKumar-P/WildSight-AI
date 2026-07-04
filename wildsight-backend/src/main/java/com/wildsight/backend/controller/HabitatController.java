@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/habitats")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class HabitatController {
     private final HabitatService habitatService;
     
     @Operation(summary = "Create habitat")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public HabitatResponse createHabitat(
             @Valid @RequestBody HabitatRequest request) {
@@ -33,6 +34,7 @@ public class HabitatController {
     }
 
     @Operation(summary = "Get all habitats")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<HabitatResponse> getAllHabitats() {
 
@@ -40,6 +42,7 @@ public class HabitatController {
     }
 
     @Operation(summary = "Get habitat by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public HabitatResponse getHabitatById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class HabitatController {
     }
 
     @Operation(summary = "Update habitat")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public HabitatResponse updateHabitat(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class HabitatController {
     }
 
     @Operation(summary = "Delete habitat")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteHabitat(
             @PathVariable Long id) {

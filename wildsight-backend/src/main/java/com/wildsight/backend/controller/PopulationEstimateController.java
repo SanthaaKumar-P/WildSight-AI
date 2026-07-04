@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/population-estimates")
 @RequiredArgsConstructor
@@ -25,6 +25,7 @@ public class PopulationEstimateController {
     private final PopulationEstimateService populationEstimateService;
 
     @Operation(summary = "Create population estimate")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
     public PopulationEstimateResponse createEstimate(
             @Valid @RequestBody PopulationEstimateRequest request) {
@@ -33,6 +34,7 @@ public class PopulationEstimateController {
     }
 
     @Operation(summary = "Get all population estimates")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public List<PopulationEstimateResponse> getAllEstimates() {
 
@@ -40,6 +42,7 @@ public class PopulationEstimateController {
     }
 
     @Operation(summary = "Get population estimate by ID")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public PopulationEstimateResponse getEstimateById(
             @PathVariable Long id) {
@@ -48,6 +51,7 @@ public class PopulationEstimateController {
     }
 
     @Operation(summary = "Update population estimate")
+    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PutMapping("/{id}")
     public PopulationEstimateResponse updateEstimate(
             @PathVariable Long id,
@@ -57,6 +61,7 @@ public class PopulationEstimateController {
     }
 
     @Operation(summary = "Delete population estimate")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteEstimate(
             @PathVariable Long id) {
