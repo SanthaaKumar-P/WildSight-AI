@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.nio.file.*;
@@ -143,14 +140,20 @@ public UploadedImageResponse uploadImage(
     User user = userRepository.findById(uploadedBy)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-    String uploadDir = "uploads/images/";
+    Path uploadPath = Paths.get("uploads", "images");
 
-    Files.createDirectories(Paths.get(uploadDir));
+if (Files.exists(uploadPath) && !Files.isDirectory(uploadPath)) {
+    throw new RuntimeException(
+            "'uploads/images' exists but is not a directory."
+    );
+}
+
+Files.createDirectories(uploadPath);
 
     String fileName =
             UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-    Path path = Paths.get(uploadDir, fileName);
+    Path path = uploadPath.resolve(fileName);
 
     Files.copy(file.getInputStream(),
             path,

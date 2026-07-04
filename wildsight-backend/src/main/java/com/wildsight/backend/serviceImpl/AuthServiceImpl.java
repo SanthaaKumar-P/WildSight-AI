@@ -32,11 +32,16 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException(
+                    "An account already exists with this email."
+            );
+        }
 
-    throw new RuntimeException(
-            "An account already exists with this email."
-    );
-}
+        if ("ADMIN".equalsIgnoreCase(request.getRole())) {
+            throw new RuntimeException(
+                    "Admin registration is not allowed. Please contact the system administrator."
+            );
+        }
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -49,14 +54,9 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         user = userRepository.save(user);
-        if ("ADMIN".equalsIgnoreCase(request.getRole())) {
 
-    throw new RuntimeException(
-            "Admin registration is not allowed. Please contact the system administrator."
-    );
-}
         Role role = roleRepository.findByRoleName(request.getRole().toUpperCase())
-        .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
         UserRole userRole = UserRole.builder()
                 .user(user)
@@ -73,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
                 .userId(user.getUserId())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
+                .role(role.getRoleName())
                 .build();
     }
 
@@ -91,12 +92,20 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtService.generateToken(user.getEmail());
 
+        String role = user.getUserRoles()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("User role not found"))
+                .getRole()
+                .getRoleName();
+
         return AuthResponse.builder()
                 .token(token)
                 .message("Login Successful")
                 .userId(user.getUserId())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
+                .role(role)
                 .build();
     }
 }
