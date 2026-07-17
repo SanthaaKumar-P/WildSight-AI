@@ -12,7 +12,8 @@ import com.wildsight.backend.service.UploadedImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.wildsight.backend.service.AIService;
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ public class UploadedImageServiceImpl implements UploadedImageService {
     private final UploadedImageRepository uploadedImageRepository;
     private final ObservationRepository observationRepository;
     private final UserRepository userRepository;
+    private final AIService aiService;
 
     @Override
     public UploadedImageResponse uploadImage(UploadedImageRequest request) {
@@ -171,6 +173,15 @@ Files.createDirectories(uploadPath);
 
     image = uploadedImageRepository.save(image);
 
-    return mapToResponse(image);
+    image = uploadedImageRepository.save(image);
+
+// Call AI Service
+String species = aiService.predictImage(path.toFile());
+
+System.out.println("====================================");
+System.out.println("AI Prediction : " + species);
+System.out.println("====================================");
+
+return mapToResponse(image);
 }
 }
