@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
+import com.wildsight.backend.dto.ai.AnimalDetection;
 import java.io.File;
 
 @Service
@@ -17,7 +17,8 @@ import java.io.File;
 public class AIServiceImpl implements AIService {
 
     private final RestTemplate restTemplate;
-
+    private static final String DETECTION_URL =
+        "http://127.0.0.1:8000/detect-animals";
     private static final String AI_URL =
             "http://127.0.0.1:8000/predict-image";
 
@@ -59,4 +60,54 @@ public class AIServiceImpl implements AIService {
 
         return ai.getPredictedSpecies();
     }
+    @Override
+public AnimalDetection detectAnimals(File imageFile) {
+
+    System.out.println("====================================");
+    System.out.println("Calling Animal Detection API...");
+    System.out.println("Image : " + imageFile.getAbsolutePath());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("file", new FileSystemResource(imageFile));
+
+    HttpEntity<MultiValueMap<String, Object>> request =
+            new HttpEntity<>(body, headers);
+
+    ResponseEntity<AnimalDetection> response =
+            restTemplate.postForEntity(
+                    DETECTION_URL,
+                    request,
+                    AnimalDetection.class
+            );
+
+    System.out.println("HTTP Status : " + response.getStatusCode());
+
+    AnimalDetection detection = response.getBody();
+
+    if (detection == null) {
+        throw new RuntimeException("Animal Detection API returned empty response.");
+    }
+
+    System.out.println("Animals Found : " + detection.getAnimalCount());
+
+    if (detection.getDetections() != null) {
+
+        detection.getDetections().forEach(d -> {
+
+            System.out.println("-------------------------");
+            System.out.println("Species : " + d.getSpecies());
+            System.out.println("Confidence : " + d.getConfidence());
+            System.out.println("Bounding Box : " + d.getBoundingBox());
+
+        });
+
+    }
+
+    System.out.println("====================================");
+
+    return detection;
+}
 }

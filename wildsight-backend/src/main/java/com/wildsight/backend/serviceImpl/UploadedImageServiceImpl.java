@@ -2,6 +2,7 @@ package com.wildsight.backend.serviceImpl;
 
 import com.wildsight.backend.dto.UploadedImageRequest;
 import com.wildsight.backend.dto.UploadedImageResponse;
+import com.wildsight.backend.dto.ai.AnimalDetection;
 import com.wildsight.backend.entity.Observation;
 import com.wildsight.backend.entity.UploadedImage;
 import com.wildsight.backend.entity.User;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.nio.file.*;
 import java.io.IOException;
 import java.util.UUID;
-
+import com.wildsight.backend.dto.ai.AnimalDetection;
 @Service
 @RequiredArgsConstructor
 public class UploadedImageServiceImpl implements UploadedImageService {
@@ -177,6 +178,24 @@ Files.createDirectories(uploadPath);
 
 // Call AI Service
 String species = aiService.predictImage(path.toFile());
+
+AnimalDetection detection = aiService.detectAnimals(path.toFile());
+
+System.out.println("Animals Detected : " + detection.getAnimalCount());
+
+if (detection.getDetections() != null) {
+
+    detection.getDetections().forEach(d -> {
+
+        System.out.println(
+                d.getSpecies()
+                + " -> "
+                + d.getConfidence()
+        );
+
+    });
+
+}
 
 System.out.println("====================================");
 System.out.println("AI Prediction : " + species);
