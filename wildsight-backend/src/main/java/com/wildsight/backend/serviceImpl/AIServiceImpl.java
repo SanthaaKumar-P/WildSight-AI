@@ -11,7 +11,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.wildsight.backend.dto.ai.AnimalDetection;
 import java.io.File;
-
+import com.wildsight.backend.dto.ai.AudioPredictionResult;
+import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 @RequiredArgsConstructor
 public class AIServiceImpl implements AIService {
@@ -21,6 +22,8 @@ public class AIServiceImpl implements AIService {
         "http://127.0.0.1:8000/detect-animals";
     private static final String AI_URL =
             "http://127.0.0.1:8000/predict-image";
+    private static final String AUDIO_URL =
+        "http://127.0.0.1:8000/predict-audio";
 
     @Override
     public String predictImage(File imageFile) {
@@ -109,5 +112,39 @@ public AnimalDetection detectAnimals(File imageFile) {
     System.out.println("====================================");
 
     return detection;
+}
+@Override
+public AudioPredictionResult predictAudio(File audioFile) {
+
+    System.out.println("====================================");
+    System.out.println("Calling BirdNET...");
+    System.out.println(audioFile.getAbsolutePath());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    body.add("file", new FileSystemResource(audioFile));
+
+    HttpEntity<MultiValueMap<String, Object>> request =
+            new HttpEntity<>(body, headers);
+
+    ResponseEntity<AudioPredictionResult> response =
+            restTemplate.postForEntity(
+                    AUDIO_URL,
+                    request,
+                    AudioPredictionResult.class
+            );
+
+    AudioPredictionResult result = response.getBody();
+
+    if (result == null) {
+        throw new RuntimeException("BirdNET returned empty response.");
+    }
+
+    System.out.println("Species : " + result.getSpecies());
+    System.out.println("Confidence : " + result.getConfidence());
+
+    return result;
 }
 }
