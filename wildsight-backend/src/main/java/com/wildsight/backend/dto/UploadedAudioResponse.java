@@ -42,12 +42,24 @@ public class UploadedAudioResponse {
 
     private BigDecimal durationSeconds;
 
-
+    private String environmentNoise;
 
     // ===== AI RESULT =====
 
 
     private String species;
+
+    private String kingdom;
+
+private String phylum;
+
+private String className;
+
+private String order;
+
+private String family;
+
+private String genus;
 
 
     private String scientificName;

@@ -11,7 +11,8 @@ import com.wildsight.backend.repository.UploadedAudioRepository;
 import com.wildsight.backend.repository.UserRepository;
 import com.wildsight.backend.service.AIService;
 import com.wildsight.backend.service.UploadedAudioService;
-
+import com.wildsight.backend.entity.DetectionResult;
+import com.wildsight.backend.repository.DetectionResultRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UploadedAudioServiceImpl implements UploadedAudioService {
 
     private final UserRepository userRepository;
 
-
+    private final DetectionResultRepository detectionResultRepository;
 
     @Override
     public UploadedAudioResponse uploadAudio(
@@ -344,20 +345,76 @@ uploadedAudioRepository.save(audio);
 
 // ================= BIRDNET AI =================
 
-
-AudioPredictionResult result =
+AudioPredictionResult prediction =
         aiService.predictAudio(
                 path.toFile()
         );
+// ================= SAVE DETECTION RESULT =================
+
+DetectionResult result =
+        DetectionResult.builder()
+
+        .observation(observation)
+
+        .sourceType("AUDIO")
+
+        .species(
+                prediction.getSpecies()
+        )
+
+        .scientificName(
+                prediction.getScientificName()
+        )
+
+        .category(
+                prediction.getCategory()
+        )
+
+        .confidence(
+                prediction.getConfidence()
+        )
+
+        .conservationStatus(
+                prediction.getConservationStatus()
+        )
+
+        .kingdom(
+                prediction.getKingdom()
+        )
+
+        .phylum(
+                prediction.getPhylum()
+        )
+
+        .className(
+                prediction.getClassName()
+        )
+
+        .order(
+                prediction.getOrder()
+        )
+
+        .family(
+                prediction.getFamily()
+        )
+
+        .genus(
+                prediction.getGenus()
+        )
+
+        .build();
+
+detectionResultRepository.save(result);
 
 
 
 // ================= RESPONSE =================
 
-
 return UploadedAudioResponse.builder()
 
-.audioId(audio.getAudioId())
+.audioId(
+        audio.getAudioId()
+)
 
 .observationId(
         observation.getObservationId()
@@ -391,33 +448,68 @@ return UploadedAudioResponse.builder()
         audio.getDurationSeconds()
 )
 
+
+// AI RESULT
+
 .species(
-        result.getSpecies()
+        prediction.getSpecies()
 )
 
 .scientificName(
-        result.getScientificName()
+        prediction.getScientificName()
 )
 
 .confidence(
-        result.getConfidence()
+        prediction.getConfidence()
 )
 
 .category(
-        "Bird"
+        prediction.getCategory()
 )
 
 .soundType(
-        "Bird Call"
+        prediction.getSoundType()
 )
 
 .conservationStatus(
-        "Protected"
+        prediction.getConservationStatus()
+)
+
+.environmentNoise(
+        prediction.getEnvironmentNoise()
 )
 
 .noiseFiltered(
-        true
+        prediction.getNoiseFiltered()
 )
+
+
+// TAXONOMY
+
+.kingdom(
+        prediction.getKingdom()
+)
+
+.phylum(
+        prediction.getPhylum()
+)
+
+.className(
+        prediction.getClassName()
+)
+
+.order(
+        prediction.getOrder()
+)
+
+.family(
+        prediction.getFamily()
+)
+
+.genus(
+        prediction.getGenus()
+)
+
 
 .model(
         "BirdNET Analyzer"

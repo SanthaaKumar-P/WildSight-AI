@@ -1,14 +1,20 @@
 package com.wildsight.backend.serviceImpl;
 
+
 import com.wildsight.backend.dto.UploadedImageRequest;
 import com.wildsight.backend.dto.UploadedImageResponse;
 import com.wildsight.backend.dto.ai.AnimalDetection;
+
+import com.wildsight.backend.entity.DetectionResult;
 import com.wildsight.backend.entity.Observation;
 import com.wildsight.backend.entity.UploadedImage;
 import com.wildsight.backend.entity.User;
+
+import com.wildsight.backend.repository.DetectionResultRepository;
 import com.wildsight.backend.repository.ObservationRepository;
 import com.wildsight.backend.repository.UploadedImageRepository;
 import com.wildsight.backend.repository.UserRepository;
+
 import com.wildsight.backend.service.AIService;
 import com.wildsight.backend.service.UploadedImageService;
 
@@ -16,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -25,9 +32,12 @@ import java.util.List;
 import java.util.UUID;
 
 
+
 @Service
 @RequiredArgsConstructor
-public class UploadedImageServiceImpl implements UploadedImageService {
+public class UploadedImageServiceImpl 
+        implements UploadedImageService {
+
 
 
     private final UploadedImageRepository uploadedImageRepository;
@@ -37,6 +47,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
     private final UserRepository userRepository;
 
     private final AIService aiService;
+
+    private final DetectionResultRepository detectionResultRepository;
+
 
 
 
@@ -53,7 +66,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                         request.getObservationId()
                 )
                 .orElseThrow(
-                        () -> new RuntimeException("Observation not found")
+                        () -> new RuntimeException(
+                                "Observation not found"
+                        )
                 );
 
 
@@ -62,7 +77,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                         request.getUploadedBy()
                 )
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new RuntimeException(
+                                "User not found"
+                        )
                 );
 
 
@@ -72,17 +89,27 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
                 .observation(observation)
 
-                .fileName(request.getFileName())
+                .fileName(
+                        request.getFileName()
+                )
 
-                .filePath(request.getFilePath())
+                .filePath(
+                        request.getFilePath()
+                )
 
-                .capturedAt(request.getCapturedAt())
+                .capturedAt(
+                        request.getCapturedAt()
+                )
 
-                .fileSize(request.getFileSize())
+                .fileSize(
+                        request.getFileSize()
+                )
 
                 .uploadedBy(user)
 
-                .imageQuality(request.getImageQuality())
+                .imageQuality(
+                        request.getImageQuality()
+                )
 
                 .build();
 
@@ -100,8 +127,10 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
 
 
+
     @Override
     public List<UploadedImageResponse> getAllImages() {
+
 
         return uploadedImageRepository.findAll()
 
@@ -117,6 +146,7 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
 
 
+
     @Override
     public UploadedImageResponse getImageById(Long id) {
 
@@ -125,7 +155,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 uploadedImageRepository.findById(id)
 
                 .orElseThrow(
-                        () -> new RuntimeException("Image not found")
+                        () -> new RuntimeException(
+                                "Image not found"
+                        )
                 );
 
 
@@ -133,59 +165,6 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
     }
 
-
-
-
-
-    @Override
-    public UploadedImageResponse updateImage(
-            Long id,
-            UploadedImageRequest request) {
-
-
-        UploadedImage image =
-                uploadedImageRepository.findById(id)
-
-                .orElseThrow(
-                        () -> new RuntimeException("Image not found")
-                );
-
-
-
-        image.setFileName(
-                request.getFileName()
-        );
-
-
-        image.setFilePath(
-                request.getFilePath()
-        );
-
-
-        image.setCapturedAt(
-                request.getCapturedAt()
-        );
-
-
-        image.setFileSize(
-                request.getFileSize()
-        );
-
-
-        image.setImageQuality(
-                request.getImageQuality()
-        );
-
-
-
-        image =
-        uploadedImageRepository.save(image);
-
-
-
-        return mapToResponse(image);
-
-    }
 
 
 
@@ -199,7 +178,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 uploadedImageRepository.findById(id)
 
                 .orElseThrow(
-                        () -> new RuntimeException("Image not found")
+                        () -> new RuntimeException(
+                                "Image not found"
+                        )
                 );
 
 
@@ -214,7 +195,6 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
 
     // ================= REAL UPLOAD + AI =================
-
 
 
     @Override
@@ -238,7 +218,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 observationRepository.findById(observationId)
 
                 .orElseThrow(
-                        () -> new RuntimeException("Observation not found")
+                        () -> new RuntimeException(
+                                "Observation not found"
+                        )
                 );
 
 
@@ -247,7 +229,9 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 userRepository.findById(uploadedBy)
 
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new RuntimeException(
+                                "User not found"
+                        )
                 );
 
 
@@ -260,23 +244,21 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 );
 
 
-
-        Files.createDirectories(uploadPath);
+        Files.createDirectories(
+                uploadPath
+        );
 
 
 
         String fileName =
-
                 UUID.randomUUID()
                 + "_"
                 + file.getOriginalFilename();
 
 
 
-
         Path path =
                 uploadPath.resolve(fileName);
-
 
 
 
@@ -301,18 +283,27 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
                 .uploadedBy(user)
 
-                .fileName(file.getOriginalFilename())
+                .fileName(
+                        file.getOriginalFilename()
+                )
 
-                .filePath(path.toString())
+                .filePath(
+                        path.toString()
+                )
 
-                .fileSize(file.getSize())
+                .fileSize(
+                        file.getSize()
+                )
 
-                .capturedAt(capturedAt)
+                .capturedAt(
+                        capturedAt
+                )
 
-                .imageQuality(imageQuality)
+                .imageQuality(
+                        imageQuality
+                )
 
                 .build();
-
 
 
 
@@ -331,7 +322,6 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 );
 
 
-
         AnimalDetection detection =
                 aiService.detectAnimals(
                         path.toFile()
@@ -339,21 +329,85 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
 
 
-        System.out.println("==============================");
-
-        System.out.println(
-                "AI Species : "
-                + species
-        );
 
 
-        System.out.println(
-                "Animal Count : "
-                + detection.getAnimalCount()
-        );
+        // ================= SAVE DETECTION RESULT =================
 
 
-        System.out.println("==============================");
+        if(detection.getDetections()!=null)
+        {
+
+            detection.getDetections()
+            
+            .forEach(animal -> {
+
+
+                DetectionResult result =
+
+                        DetectionResult.builder()
+
+                        .observation(
+                                observation
+                        )
+
+                        .sourceType(
+                                "IMAGE"
+                        )
+
+                        .species(
+                                animal.getSpecies()
+                        )
+
+                        .scientificName(
+                                animal.getScientificName()
+                        )
+
+                        .category(
+                                animal.getCategory()
+                        )
+
+                        .confidence(
+                                animal.getConfidence()
+                        )
+
+                        .conservationStatus(
+                                animal.getSpeciesStatus()
+                        )
+
+                        .kingdom(
+                                animal.getKingdom()
+                        )
+
+                        .phylum(
+                                animal.getPhylum()
+                        )
+
+                        .className(
+                                animal.getClassName()
+                        )
+
+                        .order(
+                                animal.getOrder()
+                        )
+
+                        .family(
+                                animal.getFamily()
+                        )
+
+                        .genus(
+                                animal.getGenus()
+                        )
+
+                        .build();
+
+
+
+                detectionResultRepository.save(result);
+
+
+            });
+
+        }
 
 
 
@@ -366,83 +420,64 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                         image.getImageId()
                 )
 
-
                 .observationId(
                         observation.getObservationId()
                 )
-
 
                 .uploadedBy(
                         user.getUserId()
                 )
 
-
                 .uploaderName(
                         user.getFullName()
                 )
-
 
                 .fileName(
                         image.getFileName()
                 )
 
-
                 .filePath(
                         image.getFilePath()
                 )
-
 
                 .capturedAt(
                         image.getCapturedAt()
                 )
 
-
-                .uploadTime(
-                        image.getUploadTime()
-                )
-
-
                 .fileSize(
                         image.getFileSize()
                 )
-
 
                 .imageQuality(
                         image.getImageQuality()
                 )
 
 
-                // AI RESULTS
-
                 .predictedSpecies(
                         species
                 )
-
 
                 .animalCount(
                         detection.getAnimalCount()
                 )
 
-
                 .detections(
                         detection.getDetections()
                 )
-
 
                 .annotatedImage(
                         detection.getAnnotatedImage()
                 )
 
-
                 .model(
-                        "YOLO + MobileNet"
+                        "YOLO + MobileNetV2"
                 )
-
 
                 .build();
 
-
     }
+
+
 
 
 
@@ -453,6 +488,7 @@ public class UploadedImageServiceImpl implements UploadedImageService {
 
 
         return UploadedImageResponse.builder()
+
 
                 .imageId(
                         image.getImageId()
@@ -492,11 +528,6 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                 )
 
 
-                .uploadTime(
-                        image.getUploadTime()
-                )
-
-
                 .fileSize(
                         image.getFileSize()
                 )
@@ -506,9 +537,18 @@ public class UploadedImageServiceImpl implements UploadedImageService {
                         image.getImageQuality()
                 )
 
-
                 .build();
 
+    }
+
+
+
+
+
+    @Override
+    public UploadedImageResponse updateImage(Long id, UploadedImageRequest request) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateImage'");
     }
 
 }
