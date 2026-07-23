@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 "/api/datasets/**",
                                 "/v3/api-docs/**",
                                 "/api-docs/**",
-
+                                "/exports/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
 
