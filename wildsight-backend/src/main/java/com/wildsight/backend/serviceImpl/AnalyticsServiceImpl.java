@@ -1,6 +1,7 @@
 package com.wildsight.backend.serviceImpl;
 
 import com.wildsight.backend.dto.analytics.CategoryDistributionResponse;
+import com.wildsight.backend.dto.analytics.ConservationStatusResponse;
 import com.wildsight.backend.dto.analytics.DashboardSummaryResponse;
 import com.wildsight.backend.dto.analytics.SpeciesDistributionResponse;
 
@@ -106,4 +107,21 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                         .build())
                 .toList();
     }
+
+    @Override
+public List<ConservationStatusResponse> getConservationStatus() {
+
+
+    return detectionResultRepository
+            .getConservationStatusDistribution()
+            .stream()
+            .map(result ->
+                    ConservationStatusResponse.builder()
+                            .status((String) result[0])
+                            .count((Long) result[1])
+                            .build()
+            )
+            .toList();
+
+}
 }

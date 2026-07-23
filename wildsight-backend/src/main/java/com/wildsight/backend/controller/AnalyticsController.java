@@ -1,6 +1,7 @@
 package com.wildsight.backend.controller;
 
 import com.wildsight.backend.dto.analytics.CategoryDistributionResponse;
+import com.wildsight.backend.dto.analytics.ConservationStatusResponse;
 import com.wildsight.backend.dto.analytics.DashboardSummaryResponse;
 import com.wildsight.backend.dto.analytics.SpeciesDistributionResponse;
 
@@ -33,4 +34,10 @@ public class AnalyticsController {
     public List<CategoryDistributionResponse> categoryDistribution() {
         return analyticsService.getCategoryDistribution();
     }
+    @GetMapping("/conservation-status")
+public List<ConservationStatusResponse> conservationStatus(){
+
+    return analyticsService.getConservationStatus();
+
+}
 }

@@ -1,6 +1,7 @@
 package com.wildsight.backend.service;
 
 import com.wildsight.backend.dto.analytics.CategoryDistributionResponse;
+import com.wildsight.backend.dto.analytics.ConservationStatusResponse;
 import com.wildsight.backend.dto.analytics.DashboardSummaryResponse;
 import com.wildsight.backend.dto.analytics.SpeciesDistributionResponse;
 
@@ -13,5 +14,7 @@ public interface AnalyticsService {
     List<SpeciesDistributionResponse> getSpeciesDistribution();
 
     List<CategoryDistributionResponse> getCategoryDistribution();
+
+    List<ConservationStatusResponse> getConservationStatus();
 
 }

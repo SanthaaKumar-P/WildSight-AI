@@ -53,4 +53,11 @@ public interface DetectionResultRepository
             ORDER BY COUNT(d) DESC
             """)
     List<Object[]> getTopDetectedSpecies();
+
+    @Query("""
+        SELECT d.conservationStatus, COUNT(d)
+        FROM DetectionResult d
+        GROUP BY d.conservationStatus
+        """)
+List<Object[]> getConservationStatusDistribution();
 }
