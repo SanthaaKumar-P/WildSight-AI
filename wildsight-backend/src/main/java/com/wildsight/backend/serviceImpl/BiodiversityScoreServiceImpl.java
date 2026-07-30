@@ -1,5 +1,7 @@
 package com.wildsight.backend.serviceImpl;
+import com.wildsight.backend.dto.BiodiversityDashboardResponse;
 
+import java.math.BigDecimal;
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
 import com.wildsight.backend.entity.BiodiversityScore;
@@ -108,7 +110,31 @@ public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
 
         biodiversityScoreRepository.delete(score);
     }
+    @Override
+public BiodiversityDashboardResponse getDashboard() {
 
+    return BiodiversityDashboardResponse.builder()
+            .totalAssessments(biodiversityScoreRepository.count())
+            .totalSpecies(biodiversityScoreRepository.getTotalSpecies())
+            .averageSpeciesDiversity(
+                    defaultValue(biodiversityScoreRepository.getAverageSpeciesDiversity()))
+            .averageHabitatQuality(
+                    defaultValue(biodiversityScoreRepository.getAverageHabitatQuality()))
+            .averageEcosystemHealth(
+                    defaultValue(biodiversityScoreRepository.getAverageEcosystemHealth()))
+            .averageOverallScore(
+                    defaultValue(biodiversityScoreRepository.getAverageOverallScore()))
+            .healthyCount(
+                    biodiversityScoreRepository.countByHealthStatus("Healthy"))
+            .vulnerableCount(
+                    biodiversityScoreRepository.countByHealthStatus("Vulnerable"))
+            .criticalCount(
+                    biodiversityScoreRepository.countByHealthStatus("Critical"))
+            .build();
+}
+private BigDecimal defaultValue(BigDecimal value) {
+    return value != null ? value : BigDecimal.ZERO;
+}
     private BiodiversityScoreResponse mapToResponse(BiodiversityScore score) {
 
         return BiodiversityScoreResponse.builder()
@@ -126,4 +152,5 @@ public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
                 .calculatedAt(score.getCalculatedAt())
                 .build();
     }
+    
 }

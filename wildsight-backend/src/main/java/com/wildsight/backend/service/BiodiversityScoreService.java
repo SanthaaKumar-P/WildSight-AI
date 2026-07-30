@@ -2,7 +2,7 @@ package com.wildsight.backend.service;
 
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
-
+import com.wildsight.backend.dto.BiodiversityDashboardResponse;
 import java.util.List;
 
 public interface BiodiversityScoreService {
@@ -18,4 +18,6 @@ public interface BiodiversityScoreService {
             BiodiversityScoreRequest request);
 
     void deleteScore(Long id);
+
+    BiodiversityDashboardResponse getDashboard();
 }

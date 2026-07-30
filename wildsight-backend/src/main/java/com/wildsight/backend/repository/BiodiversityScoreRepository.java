@@ -2,10 +2,35 @@ package com.wildsight.backend.repository;
 
 import com.wildsight.backend.entity.BiodiversityScore;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+
 @Repository
-public interface BiodiversityScoreRepository
-        extends JpaRepository<BiodiversityScore, Long> {
+public interface BiodiversityScoreRepository extends JpaRepository<BiodiversityScore, Long> {
+
+    // Count records by health status
+    long countByHealthStatus(String healthStatus);
+
+    // Average Species Diversity Score
+    @Query("SELECT AVG(b.speciesDiversityScore) FROM BiodiversityScore b")
+    BigDecimal getAverageSpeciesDiversity();
+
+    // Average Habitat Quality Score
+    @Query("SELECT AVG(b.habitatQualityScore) FROM BiodiversityScore b")
+    BigDecimal getAverageHabitatQuality();
+
+    // Average Ecosystem Health Score
+    @Query("SELECT AVG(b.ecosystemHealthScore) FROM BiodiversityScore b")
+    BigDecimal getAverageEcosystemHealth();
+
+    // Average Overall Biodiversity Score
+    @Query("SELECT AVG(b.overallScore) FROM BiodiversityScore b")
+    BigDecimal getAverageOverallScore();
+
+    // Total Species Count
+    @Query("SELECT COALESCE(SUM(b.speciesCount), 0) FROM BiodiversityScore b")
+    Integer getTotalSpecies();
 
 }
