@@ -21,10 +21,6 @@ public interface BiodiversityScoreRepository extends JpaRepository<BiodiversityS
     @Query("SELECT AVG(b.habitatQualityScore) FROM BiodiversityScore b")
     BigDecimal getAverageHabitatQuality();
 
-    // Average Ecosystem Health Score
-    @Query("SELECT AVG(b.ecosystemHealthScore) FROM BiodiversityScore b")
-    BigDecimal getAverageEcosystemHealth();
-
     // Average Overall Biodiversity Score
     @Query("SELECT AVG(b.overallScore) FROM BiodiversityScore b")
     BigDecimal getAverageOverallScore();
@@ -75,4 +71,10 @@ FROM BiodiversityScore b
 WHERE b.habitatQualityScore < 75
 """)
 Long countDegradedHabitats();
+
+@Query("""
+SELECT AVG(b.ecosystemHealthScore)
+FROM BiodiversityScore b
+""")
+Double getAverageEcosystemHealth();
 }

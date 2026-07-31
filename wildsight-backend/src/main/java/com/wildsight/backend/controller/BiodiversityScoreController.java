@@ -3,12 +3,14 @@ package com.wildsight.backend.controller;
 import com.wildsight.backend.dto.BiodiversityDashboardResponse;
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
+import com.wildsight.backend.dto.ConservationPriorityResponse;
+import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 import com.wildsight.backend.dto.HabitatHealthResponse;
 import com.wildsight.backend.dto.SpeciesDiversityResponse;
 import com.wildsight.backend.service.BiodiversityScoreService;
 import com.wildsight.backend.dto.BiodiversityIndexResponse;
 import jakarta.validation.Valid;
-
+import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 import lombok.RequiredArgsConstructor;
 import com.wildsight.backend.dto.HabitatHealthResponse;
 import org.springframework.http.ResponseEntity;
@@ -137,6 +139,27 @@ public ResponseEntity<HabitatHealthResponse> getHabitatHealth(){
             biodiversityScoreService.getHabitatHealthAssessment()
     );
 
+}
+
+@Operation(summary = "Analyze ecosystem monitoring status")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/ecosystem-monitoring")
+public ResponseEntity<EcosystemMonitoringResponse> getEcosystemMonitoring(){
+
+    return ResponseEntity.ok(
+            biodiversityScoreService.getEcosystemMonitoring()
+    );
+
+}
+
+@Operation(summary = "Analyze conservation priority")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/conservation-priority")
+public ResponseEntity<ConservationPriorityResponse> getConservationPriority() {
+
+    return ResponseEntity.ok(
+            biodiversityScoreService.getConservationPriority()
+    );
 }
 
 }

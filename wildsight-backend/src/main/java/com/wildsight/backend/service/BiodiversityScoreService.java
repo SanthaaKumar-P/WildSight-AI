@@ -2,6 +2,7 @@ package com.wildsight.backend.service;
 
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
+import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.HabitatHealthResponse;
 import com.wildsight.backend.dto.SpeciesDiversityResponse;
 import com.wildsight.backend.dto.BiodiversityDashboardResponse;
@@ -10,6 +11,7 @@ import com.wildsight.backend.dto.BiodiversityIndexResponse;
 import java.util.List;
 import com.wildsight.backend.dto.HabitatHealthResponse;
 import com.wildsight.backend.dto.SpeciesDiversityResponse;
+import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 public interface BiodiversityScoreService {
 
     BiodiversityScoreResponse createScore(BiodiversityScoreRequest request);
@@ -27,4 +29,6 @@ public interface BiodiversityScoreService {
     BiodiversityDashboardResponse getDashboard();
     SpeciesDiversityResponse getSpeciesDiversityAnalysis();
     HabitatHealthResponse getHabitatHealthAssessment();
+    EcosystemMonitoringResponse getEcosystemMonitoring();
+    ConservationPriorityResponse getConservationPriority();
 }

@@ -27,4 +27,31 @@ public class Habitat {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "habitat_quality_score")
+private Double habitatQualityScore;
+
+@Column(name = "degradation_level")
+private Double degradationLevel;
+
+@Column(name = "vegetation_density")
+private Double vegetationDensity;
+
+@Column(name = "temperature")
+private Double temperature;
+
+@Column(name = "humidity")
+private Double humidity;
+
+@Column(name = "rainfall")
+private Double rainfall;
+
+@Column(name = "water_quality")
+private Double waterQuality;
+
+@Column(name = "air_quality")
+private Double airQuality;
+
+@Column(name = "suitability_score")
+private Double suitabilityScore;
 }

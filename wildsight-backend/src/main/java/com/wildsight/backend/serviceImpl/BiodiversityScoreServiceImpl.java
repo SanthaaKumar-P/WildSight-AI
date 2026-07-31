@@ -4,6 +4,8 @@ import com.wildsight.backend.dto.HabitatHealthResponse;
 import java.math.BigDecimal;
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
+import com.wildsight.backend.dto.ConservationPriorityResponse;
+import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 import com.wildsight.backend.entity.BiodiversityScore;
 import com.wildsight.backend.entity.Habitat;
 import com.wildsight.backend.entity.Survey;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.wildsight.backend.dto.BiodiversityIndexResponse;
 import java.util.List;
 import com.wildsight.backend.dto.SpeciesDiversityResponse;
+import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 @Service
 @RequiredArgsConstructor
 public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
@@ -120,8 +123,6 @@ public BiodiversityDashboardResponse getDashboard() {
                     defaultValue(biodiversityScoreRepository.getAverageSpeciesDiversity()))
             .averageHabitatQuality(
                     defaultValue(biodiversityScoreRepository.getAverageHabitatQuality()))
-            .averageEcosystemHealth(
-                    defaultValue(biodiversityScoreRepository.getAverageEcosystemHealth()))
             .averageOverallScore(
                     defaultValue(biodiversityScoreRepository.getAverageOverallScore()))
             .healthyCount(
@@ -317,6 +318,125 @@ public HabitatHealthResponse getHabitatHealthAssessment() {
 
             .build();
 
+}
+@Override
+public EcosystemMonitoringResponse getEcosystemMonitoring() {
+
+
+    Double healthScore =
+            biodiversityScoreRepository
+                    .getAverageEcosystemHealth();
+
+
+    if(healthScore == null){
+
+        healthScore = 0.0;
+
+    }
+
+
+    String monitoringStatus;
+
+    String riskLevel;
+
+
+
+    if(healthScore >= 90){
+
+        monitoringStatus = "Stable";
+        riskLevel = "Low";
+
+    }
+    else if(healthScore >= 75){
+
+        monitoringStatus = "Healthy";
+        riskLevel = "Moderate";
+
+    }
+    else if(healthScore >= 50){
+
+        monitoringStatus = "Needs Attention";
+        riskLevel = "High";
+
+    }
+    else{
+
+        monitoringStatus = "Critical";
+        riskLevel = "Very High";
+
+    }
+
+
+
+    return EcosystemMonitoringResponse.builder()
+
+            .averageEcosystemHealth(
+                    Math.round(healthScore * 100.0) / 100.0
+            )
+
+            .monitoringStatus(monitoringStatus)
+
+            .riskLevel(riskLevel)
+
+            .build();
+
+}
+@Override
+public ConservationPriorityResponse getConservationPriority() {
+
+    Double score = biodiversityScoreRepository.getAverageOverallScore().doubleValue();
+
+    if (score == null) {
+        score = 0.0;
+    }
+
+    String priority;
+    String reason;
+    String action;
+
+    if (score >= 90) {
+
+        priority = "Low";
+
+        reason = "Excellent biodiversity and ecosystem stability.";
+
+        action = "Continue regular monitoring and conservation.";
+
+    }
+    else if (score >= 75) {
+
+        priority = "Medium";
+
+        reason = "Healthy ecosystem with minor conservation needs.";
+
+        action = "Increase biodiversity surveys and habitat monitoring.";
+
+    }
+    else if (score >= 50) {
+
+        priority = "High";
+
+        reason = "Biodiversity decline detected.";
+
+        action = "Implement habitat restoration and wildlife protection.";
+
+    }
+    else {
+
+        priority = "Critical";
+
+        reason = "Severe ecosystem degradation.";
+
+        action = "Immediate conservation intervention required.";
+
+    }
+
+    return ConservationPriorityResponse.builder()
+            .priority(priority)
+            .reason(reason)
+            .recommendedAction(action)
+            .overallScore(Math.round(score * 100.0) / 100.0)
+            .build();
 }
     
 }
