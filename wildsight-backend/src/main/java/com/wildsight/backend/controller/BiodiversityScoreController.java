@@ -1,28 +1,43 @@
 package com.wildsight.backend.controller;
 
+import com.wildsight.backend.dto.BiodiversityDashboardResponse;
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
+import com.wildsight.backend.dto.HabitatHealthResponse;
+import com.wildsight.backend.dto.SpeciesDiversityResponse;
 import com.wildsight.backend.service.BiodiversityScoreService;
+import com.wildsight.backend.dto.BiodiversityIndexResponse;
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
+import com.wildsight.backend.dto.HabitatHealthResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.wildsight.backend.dto.SpeciesDiversityResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+
+
 @RestController
 @RequestMapping("/api/biodiversity-scores")
 @RequiredArgsConstructor
 @Tag(
-    name = "Biodiversity Score Management",
-    description = "APIs for managing biodiversity scores"
+        name = "Biodiversity Score Management",
+        description = "APIs for managing biodiversity scores"
 )
 @SecurityRequirement(name = "Bearer Authentication")
 @CrossOrigin(origins = "*")
 public class BiodiversityScoreController {
 
+
     private final BiodiversityScoreService biodiversityScoreService;
+
+
 
     @Operation(summary = "Create biodiversity score")
     @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
@@ -33,6 +48,20 @@ public class BiodiversityScoreController {
         return biodiversityScoreService.createScore(request);
     }
 
+
+
+    @Operation(summary = "Get biodiversity dashboard analytics")
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/dashboard")
+    public ResponseEntity<BiodiversityDashboardResponse> getDashboard() {
+
+        return ResponseEntity.ok(
+                biodiversityScoreService.getDashboard()
+        );
+    }
+
+
+
     @Operation(summary = "Get all biodiversity scores")
     @PreAuthorize("isAuthenticated()")
     @GetMapping
@@ -40,6 +69,8 @@ public class BiodiversityScoreController {
 
         return biodiversityScoreService.getAllScores();
     }
+
+
 
     @Operation(summary = "Get biodiversity score by ID")
     @PreAuthorize("isAuthenticated()")
@@ -49,6 +80,8 @@ public class BiodiversityScoreController {
 
         return biodiversityScoreService.getScoreById(id);
     }
+
+
 
     @Operation(summary = "Update biodiversity score")
     @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
@@ -60,6 +93,8 @@ public class BiodiversityScoreController {
         return biodiversityScoreService.updateScore(id, request);
     }
 
+
+
     @Operation(summary = "Delete biodiversity score")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
@@ -70,4 +105,38 @@ public class BiodiversityScoreController {
 
         return "Biodiversity Score deleted successfully";
     }
+
+    @Operation(summary = "Calculate biodiversity index")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/index")
+public ResponseEntity<BiodiversityIndexResponse> getBiodiversityIndex(){
+
+    return ResponseEntity.ok(
+            biodiversityScoreService.getBiodiversityIndex()
+    );
+
+}
+
+@Operation(summary = "Analyze species diversity")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/species-analysis")
+public ResponseEntity<SpeciesDiversityResponse> getSpeciesAnalysis(){
+
+    return ResponseEntity.ok(
+            biodiversityScoreService.getSpeciesDiversityAnalysis()
+    );
+
+}
+
+@Operation(summary = "Analyze habitat health")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/habitat-health")
+public ResponseEntity<HabitatHealthResponse> getHabitatHealth(){
+
+    return ResponseEntity.ok(
+            biodiversityScoreService.getHabitatHealthAssessment()
+    );
+
+}
+
 }

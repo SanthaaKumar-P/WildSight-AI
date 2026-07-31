@@ -33,4 +33,46 @@ public interface BiodiversityScoreRepository extends JpaRepository<BiodiversityS
     @Query("SELECT COALESCE(SUM(b.speciesCount), 0) FROM BiodiversityScore b")
     Integer getTotalSpecies();
 
+    @Query("""
+SELECT AVG(
+(b.speciesDiversityScore +
+ b.habitatQualityScore +
+ b.ecosystemHealthScore) / 3
+)
+FROM BiodiversityScore b
+""")
+Double calculateBiodiversityIndex();
+
+@Query("""
+SELECT AVG(b.speciesDiversityScore)
+FROM BiodiversityScore b
+""")
+Double getAverageSpeciesDiversityScore();
+
+
+@Query("""
+SELECT COALESCE(SUM(b.speciesCount),0)
+FROM BiodiversityScore b
+""")
+Integer getTotalSpeciesCount();
+
+@Query("""
+SELECT AVG(b.habitatQualityScore)
+FROM BiodiversityScore b
+""")
+Double getAverageHabitatHealth();
+
+@Query("""
+SELECT COUNT(b)
+FROM BiodiversityScore b
+WHERE b.habitatQualityScore >= 75
+""")
+Long countHealthyHabitats();
+
+@Query("""
+SELECT COUNT(b)
+FROM BiodiversityScore b
+WHERE b.habitatQualityScore < 75
+""")
+Long countDegradedHabitats();
 }

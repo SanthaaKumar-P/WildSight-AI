@@ -1,6 +1,6 @@
 package com.wildsight.backend.serviceImpl;
 import com.wildsight.backend.dto.BiodiversityDashboardResponse;
-
+import com.wildsight.backend.dto.HabitatHealthResponse;
 import java.math.BigDecimal;
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
@@ -13,9 +13,9 @@ import com.wildsight.backend.repository.SurveyRepository;
 import com.wildsight.backend.service.BiodiversityScoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import com.wildsight.backend.dto.BiodiversityIndexResponse;
 import java.util.List;
-
+import com.wildsight.backend.dto.SpeciesDiversityResponse;
 @Service
 @RequiredArgsConstructor
 public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
@@ -135,6 +135,56 @@ public BiodiversityDashboardResponse getDashboard() {
 private BigDecimal defaultValue(BigDecimal value) {
     return value != null ? value : BigDecimal.ZERO;
 }
+
+@Override
+public BiodiversityIndexResponse getBiodiversityIndex() {
+
+    Double index =
+            biodiversityScoreRepository.calculateBiodiversityIndex();
+
+
+    if(index == null){
+        index = 0.0;
+    }
+
+
+    String status;
+
+
+    if(index >= 90){
+
+        status = "Excellent";
+
+    }
+    else if(index >= 75){
+
+        status = "Healthy";
+
+    }
+    else if(index >= 60){
+
+        status = "Moderate Concern";
+
+    }
+    else if(index >= 40){
+
+        status = "Vulnerable";
+
+    }
+    else{
+
+        status = "Critical";
+
+    }
+
+
+    return BiodiversityIndexResponse.builder()
+            .biodiversityIndex(
+                    Math.round(index * 100.0) / 100.0
+            )
+            .status(status)
+            .build();
+}
     private BiodiversityScoreResponse mapToResponse(BiodiversityScore score) {
 
         return BiodiversityScoreResponse.builder()
@@ -152,5 +202,121 @@ private BigDecimal defaultValue(BigDecimal value) {
                 .calculatedAt(score.getCalculatedAt())
                 .build();
     }
+
+    @Override
+public SpeciesDiversityResponse getSpeciesDiversityAnalysis() {
+
+
+    Integer totalSpecies =
+            biodiversityScoreRepository.getTotalSpeciesCount();
+
+
+    Double diversityScore =
+            biodiversityScoreRepository
+                    .getAverageSpeciesDiversityScore();
+
+
+    if(diversityScore == null){
+        diversityScore = 0.0;
+    }
+
+
+    String status;
+
+
+    if(diversityScore >= 90){
+
+        status = "Very High Diversity";
+
+    }
+    else if(diversityScore >= 75){
+
+        status = "High Diversity";
+
+    }
+    else if(diversityScore >= 50){
+
+        status = "Moderate Diversity";
+
+    }
+    else{
+
+        status = "Low Diversity";
+
+    }
+
+
+    return SpeciesDiversityResponse.builder()
+
+            .totalSpecies(totalSpecies)
+
+            .averageDiversityScore(
+                    Math.round(diversityScore * 100.0) / 100.0
+            )
+
+            .diversityStatus(status)
+
+            .build();
+
+}
+
+@Override
+public HabitatHealthResponse getHabitatHealthAssessment() {
+
+
+    Double average =
+            biodiversityScoreRepository
+                    .getAverageHabitatHealth();
+
+
+    if(average == null){
+        average = 0.0;
+    }
+
+
+    String status;
+
+
+    if(average >= 90){
+
+        status = "Excellent";
+
+    }
+    else if(average >= 75){
+
+        status = "Healthy";
+
+    }
+    else if(average >= 50){
+
+        status = "Moderate Concern";
+
+    }
+    else{
+
+        status = "Critical";
+
+    }
+
+
+    return HabitatHealthResponse.builder()
+
+            .averageHabitatHealth(
+                    Math.round(average * 100.0)/100.0
+            )
+
+            .healthyHabitats(
+                    biodiversityScoreRepository.countHealthyHabitats()
+            )
+
+            .degradedHabitats(
+                    biodiversityScoreRepository.countDegradedHabitats()
+            )
+
+            .status(status)
+
+            .build();
+
+}
     
 }
