@@ -30,5 +30,5 @@ public interface BiodiversityScoreService {
     SpeciesDiversityResponse getSpeciesDiversityAnalysis();
     HabitatHealthResponse getHabitatHealthAssessment();
     EcosystemMonitoringResponse getEcosystemMonitoring();
-    ConservationPriorityResponse getConservationPriority();
+    
 }
