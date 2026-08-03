@@ -117,4 +117,7 @@ FROM Habitat h
 WHERE h.suitabilityScore < 50
 """)
 Long countUnsuitableHabitats();
+
+@Query("SELECT AVG(h.habitatQualityScore) FROM Habitat h")
+Double getAverageHabitatQualityScore();
 }

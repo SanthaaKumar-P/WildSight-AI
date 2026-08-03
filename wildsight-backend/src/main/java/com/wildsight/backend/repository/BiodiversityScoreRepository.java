@@ -77,4 +77,9 @@ SELECT AVG(b.ecosystemHealthScore)
 FROM BiodiversityScore b
 """)
 Double getAverageEcosystemHealth();
+
+@Query("SELECT AVG(b.overallScore) FROM BiodiversityScore b")
+Double getAverageOverallScoreValue();
+
+
 }

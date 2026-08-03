@@ -1,8 +1,9 @@
 package com.wildsight.backend.service;
 
+import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.ConservationRecommendationRequest;
 import com.wildsight.backend.dto.ConservationRecommendationResponse;
-
+import com.wildsight.backend.dto.ConservationPriorityResponse;
 import java.util.List;
 
 public interface ConservationRecommendationService {
@@ -19,4 +20,6 @@ public interface ConservationRecommendationService {
             ConservationRecommendationRequest request);
 
     void deleteRecommendation(Long id);
+
+    ConservationPriorityResponse getConservationPriority();
 }

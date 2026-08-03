@@ -1,5 +1,6 @@
 package com.wildsight.backend.controller;
 
+import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.ConservationRecommendationRequest;
 import com.wildsight.backend.dto.ConservationRecommendationResponse;
 import com.wildsight.backend.service.ConservationRecommendationService;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/conservation-recommendations")
@@ -70,4 +73,13 @@ public class ConservationRecommendationController {
 
         return "Recommendation deleted successfully";
     }
+    @Operation(summary = "Get conservation priority recommendation")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/priority")
+public ResponseEntity<ConservationPriorityResponse> getConservationPriority() {
+
+    return ResponseEntity.ok(
+            recommendationService.getConservationPriority()
+    );
+}
 }

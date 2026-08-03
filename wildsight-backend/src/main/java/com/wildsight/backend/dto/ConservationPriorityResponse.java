@@ -8,12 +8,20 @@ import lombok.*;
 @AllArgsConstructor
 public class ConservationPriorityResponse {
 
-    private String priority;
+    private Double biodiversityScore;
+
+    private Double averageGrowthRate;
+
+    private Long increasingSpecies;
+
+    private Long stableSpecies;
+
+    private Long decreasingSpecies;
+
+    private String conservationPriority;
 
     private String reason;
 
     private String recommendedAction;
-
-    private Double overallScore;
 
 }

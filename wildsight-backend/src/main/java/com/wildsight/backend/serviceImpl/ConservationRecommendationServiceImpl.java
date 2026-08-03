@@ -6,10 +6,14 @@ import com.wildsight.backend.entity.BiodiversityScore;
 import com.wildsight.backend.entity.ConservationRecommendation;
 import com.wildsight.backend.repository.BiodiversityScoreRepository;
 import com.wildsight.backend.repository.ConservationRecommendationRepository;
+import com.wildsight.backend.repository.PopulationEstimateRepository;
+import com.wildsight.backend.repository.PopulationHistoryRepository;
 import com.wildsight.backend.service.ConservationRecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import java.math.BigDecimal;
+import com.wildsight.backend.dto.ConservationPriorityResponse;
+import com.wildsight.backend.entity.PopulationTrend;
 import java.util.List;
 
 @Service
@@ -18,7 +22,12 @@ public class ConservationRecommendationServiceImpl
         implements ConservationRecommendationService {
 
     private final ConservationRecommendationRepository recommendationRepository;
+
     private final BiodiversityScoreRepository biodiversityScoreRepository;
+
+    private final PopulationEstimateRepository populationEstimateRepository;
+
+    private final PopulationHistoryRepository populationHistoryRepository;
 
     @Override
     public ConservationRecommendationResponse createRecommendation(
@@ -105,12 +114,108 @@ public class ConservationRecommendationServiceImpl
 
         recommendationRepository.delete(recommendation);
     }
+    @Override
+public ConservationPriorityResponse getConservationPriority() {
 
+    BigDecimal biodiversityValue =
+            biodiversityScoreRepository.getAverageOverallScore();
+
+    BigDecimal growthValue =
+            populationEstimateRepository.getAverageGrowthRate();
+
+    double biodiversity =
+            biodiversityValue != null
+                    ? biodiversityValue.doubleValue()
+                    : 0.0;
+
+    double growth =
+            growthValue != null
+                    ? growthValue.doubleValue()
+                    : 0.0;
+
+    Long increasing =
+            populationHistoryRepository.countByTrend(
+                    PopulationTrend.INCREASING);
+
+    Long stable =
+            populationHistoryRepository.countByTrend(
+                    PopulationTrend.STABLE);
+
+    Long decreasing =
+            populationHistoryRepository.countByTrend(
+                    PopulationTrend.DECLINING);
+
+    increasing = increasing == null ? 0L : increasing;
+    stable = stable == null ? 0L : stable;
+    decreasing = decreasing == null ? 0L : decreasing;
+
+    String priority;
+    String reason;
+    String action;
+
+    if (biodiversity < 50 || decreasing > increasing) {
+
+        priority = "HIGH";
+
+        reason =
+                "Wildlife population is declining and biodiversity is below the safe threshold.";
+
+        action =
+                "Increase habitat restoration, strengthen anti-poaching patrols and deploy additional AI monitoring.";
+
+    }
+    else if (biodiversity < 75) {
+
+        priority = "MEDIUM";
+
+        reason =
+                "Moderate ecosystem condition detected.";
+
+        action =
+                "Increase periodic surveys and improve habitat management.";
+
+    }
+    else {
+
+        priority = "LOW";
+
+        reason =
+                "Healthy biodiversity with stable wildlife population.";
+
+        action =
+                "Continue routine conservation and monitoring.";
+
+    }
+
+    return ConservationPriorityResponse.builder()
+
+            .biodiversityScore(
+                    Math.round(biodiversity * 100.0) / 100.0)
+
+            .averageGrowthRate(
+                    Math.round(growth * 100.0) / 100.0)
+
+            .increasingSpecies(increasing)
+
+            .stableSpecies(stable)
+
+            .decreasingSpecies(decreasing)
+
+            .conservationPriority(priority)
+
+            .reason(reason)
+
+            .recommendedAction(action)
+
+            .build();
+}
     private ConservationRecommendationResponse mapToResponse(
             ConservationRecommendation recommendation) {
 
         return ConservationRecommendationResponse.builder()
-                .recommendationId(recommendation.getRecommendationId())
+
+                .recommendationId(
+                        recommendation.getRecommendationId())
 
                 .biodiversityId(
                         recommendation.getBiodiversityScore() != null
