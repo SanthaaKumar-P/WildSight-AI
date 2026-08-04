@@ -390,7 +390,7 @@ Species leopard =
          * Population Estimates
          */
 
-        if(populationEstimateRepository.count()==0){
+        if(populationEstimateRepository.count()<3){
 
 
             populationEstimateRepository.save(
@@ -482,7 +482,7 @@ Species leopard =
          * Biodiversity Scores
          */
 
-        if(biodiversityScoreRepository.count()==0){
+        if(biodiversityScoreRepository.count()<2){
 
 
             biodiversityScoreRepository.save(
