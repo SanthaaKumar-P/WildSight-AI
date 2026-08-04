@@ -1,106 +1,261 @@
 package com.wildsight.backend.serviceImpl;
 
 import com.wildsight.backend.dto.population.*;
+import com.wildsight.backend.entity.PopulationEstimate;
+import com.wildsight.backend.entity.PopulationTrend;
+
+import com.wildsight.backend.repository.PopulationEstimateRepository;
+import com.wildsight.backend.repository.PopulationHistoryRepository;
+
 import com.wildsight.backend.service.PopulationService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
+@RequiredArgsConstructor
 public class PopulationServiceImpl implements PopulationService {
+
+
+    private final PopulationEstimateRepository populationEstimateRepository;
+
+    private final PopulationHistoryRepository populationHistoryRepository;
+
+
 
     @Override
     public PopulationDashboardResponse getDashboard() {
 
+
+        Long totalPopulation =
+                populationEstimateRepository
+                        .getTotalEstimatedPopulation();
+
+
+        Long speciesRichness =
+                populationEstimateRepository
+                        .getSpeciesCount();
+
+
+        Double density =
+                populationEstimateRepository
+                        .getAverageDensity() != null
+
+                ? populationEstimateRepository
+                        .getAverageDensity()
+                        .doubleValue()
+
+                : 0.0;
+
+
+
+        Double growthRate =
+                populationEstimateRepository
+                        .getAverageGrowthRate() != null
+
+                ? populationEstimateRepository
+                        .getAverageGrowthRate()
+                        .doubleValue()
+
+                : 0.0;
+
+
+
         return PopulationDashboardResponse.builder()
-                .totalPopulation(12450L)
-                .speciesRichness(126L)
-                .populationDensity(42.8)
-                .growthRate(8.4)
-                .monitoringSites(48L)
+
+                .totalPopulation(
+                        totalPopulation == null ? 0 : totalPopulation
+                )
+
+                .speciesRichness(
+                        speciesRichness == null ? 0 : speciesRichness
+                )
+
+                .populationDensity(
+                        density
+                )
+
+                .growthRate(
+                        growthRate
+                )
+
+                .monitoringSites(0L)
+
                 .build();
+
     }
+
+
+
+
 
     @Override
     public List<PopulationTrendResponse> getPopulationTrend() {
 
+
+        Long increasing =
+                populationHistoryRepository
+                        .countByTrend(
+                                PopulationTrend.INCREASING
+                        );
+
+
+        Long stable =
+                populationHistoryRepository
+                        .countByTrend(
+                                PopulationTrend.STABLE
+                        );
+
+
+        Long declining =
+                populationHistoryRepository
+                        .countByTrend(
+                                PopulationTrend.DECLINING
+                        );
+
+
+
         return List.of(
 
                 PopulationTrendResponse.builder()
-                        .month("Jan")
-                        .population(101L)
+                        .month("Increasing")
+                        .population(
+                                increasing == null ? 0 : increasing
+                        )
                         .build(),
 
-                PopulationTrendResponse.builder()
-                        .month("Feb")
-                        .population(108L)
-                        .build(),
 
                 PopulationTrendResponse.builder()
-                        .month("Mar")
-                        .population(115L)
+                        .month("Stable")
+                        .population(
+                                stable == null ? 0 : stable
+                        )
                         .build(),
 
-                PopulationTrendResponse.builder()
-                        .month("Apr")
-                        .population(122L)
-                        .build(),
 
                 PopulationTrendResponse.builder()
-                        .month("May")
-                        .population(130L)
+                        .month("Declining")
+                        .population(
+                                declining == null ? 0 : declining
+                        )
                         .build()
 
         );
 
     }
+
+
+
+
 
     @Override
-    public List<PopulationDistributionResponse> getPopulationDistribution() {
+    public List<PopulationDistributionResponse>
+    getPopulationDistribution() {
 
-        return List.of(
 
-                PopulationDistributionResponse.builder()
-                        .species("Tiger")
-                        .location("Western Ghats")
-                        .population(96L)
-                        .build(),
+        return populationEstimateRepository
+                .getSpeciesDistribution()
 
-                PopulationDistributionResponse.builder()
-                        .species("Elephant")
-                        .location("Nilgiris")
-                        .population(142L)
-                        .build(),
+                .stream()
 
-                PopulationDistributionResponse.builder()
-                        .species("Peacock")
-                        .location("Anamalai")
-                        .population(215L)
-                        .build()
+                .map(this::mapDistribution)
 
-        );
+                .toList();
 
     }
+
+
+
+
 
     @Override
-    public List<MigrationResponse> getMigrationAnalysis() {
+    public List<MigrationResponse>
+    getMigrationAnalysis() {
 
-        return List.of(
 
-                MigrationResponse.builder()
-                        .species("Elephant")
-                        .fromLocation("Nilgiris")
-                        .toLocation("Western Ghats")
-                        .build(),
+        return populationEstimateRepository
+                .getMigrationPatterns()
 
-                MigrationResponse.builder()
-                        .species("Tiger")
-                        .fromLocation("Mudumalai")
-                        .toLocation("Sathyamangalam")
-                        .build()
+                .stream()
 
-        );
+                .map(this::mapMigration)
+
+                .toList();
 
     }
+
+
+
+
+
+
+
+    private PopulationDistributionResponse mapDistribution(
+            PopulationEstimate estimate) {
+
+
+        return PopulationDistributionResponse.builder()
+
+                .species(
+                        estimate.getSpecies() != null
+                        ? estimate.getSpecies()
+                                .getCommonName()
+                        : null
+                )
+
+                .location(
+                        estimate.getSurvey() != null
+                        ? estimate.getSurvey()
+                                .getProtectedArea()
+                        : null
+                )
+
+                .population(
+                        estimate.getEstimatedPopulation()
+                                .longValue()
+                )
+
+                .build();
+
+    }
+
+
+
+
+
+
+
+    private MigrationResponse mapMigration(
+            PopulationEstimate estimate) {
+
+
+        return MigrationResponse.builder()
+
+                .species(
+                        estimate.getSpecies() != null
+                        ? estimate.getSpecies()
+                                .getCommonName()
+                        : null
+                )
+
+                .fromLocation(
+                        estimate.getSurvey() != null
+                        ? estimate.getSurvey()
+                                .getProtectedArea()
+                        : null
+                )
+
+                .toLocation(
+                        estimate.getMigrationPattern()
+                )
+
+                .build();
+
+    }
+
 
 }
