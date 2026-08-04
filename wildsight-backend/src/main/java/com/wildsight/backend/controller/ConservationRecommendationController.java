@@ -3,6 +3,10 @@ package com.wildsight.backend.controller;
 import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.ConservationRecommendationRequest;
 import com.wildsight.backend.dto.ConservationRecommendationResponse;
+import com.wildsight.backend.dto.HabitatRestorationResponse;
+import com.wildsight.backend.dto.MonitoringOptimizationResponse;
+import com.wildsight.backend.dto.ProtectionStrategyResponse;
+import com.wildsight.backend.dto.ResourceAllocationResponse;
 import com.wildsight.backend.service.ConservationRecommendationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +15,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-
+import com.wildsight.backend.dto.MonitoringOptimizationResponse;
+import com.wildsight.backend.dto.HabitatRestorationResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
+import com.wildsight.backend.dto.ProtectionStrategyResponse;
+import com.wildsight.backend.dto.ResourceAllocationResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import com.wildsight.backend.dto.ConservationDashboardResponse;
 @RestController
 @RequestMapping("/api/conservation-recommendations")
 @RequiredArgsConstructor
@@ -81,5 +90,55 @@ public ResponseEntity<ConservationPriorityResponse> getConservationPriority() {
     return ResponseEntity.ok(
             recommendationService.getConservationPriority()
     );
+}
+@Operation(summary = "Get habitat restoration suggestions")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/restoration")
+public ResponseEntity<HabitatRestorationResponse> getHabitatRestoration() {
+
+    return ResponseEntity.ok(
+            recommendationService.getHabitatRestoration()
+    );
+
+}
+@Operation(summary = "Get wildlife protection strategies")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/protection")
+public ResponseEntity<ProtectionStrategyResponse> getProtectionStrategy() {
+
+    return ResponseEntity.ok(
+            recommendationService.getProtectionStrategy()
+    );
+
+}
+@Operation(summary = "Monitoring optimization recommendations")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/monitoring")
+public ResponseEntity<MonitoringOptimizationResponse> getMonitoringOptimization() {
+
+    return ResponseEntity.ok(
+            recommendationService.getMonitoringOptimization()
+    );
+
+}
+@Operation(summary = "Resource allocation recommendation")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/resource-allocation")
+public ResponseEntity<ResourceAllocationResponse> getResourceAllocation() {
+
+    return ResponseEntity.ok(
+            recommendationService.getResourceAllocation()
+    );
+
+}
+@Operation(summary = "Conservation Recommendation Dashboard")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/dashboard")
+public ResponseEntity<ConservationDashboardResponse> getDashboard() {
+
+    return ResponseEntity.ok(
+            recommendationService.getDashboard()
+    );
+
 }
 }

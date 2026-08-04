@@ -94,9 +94,9 @@ public class HabitatServiceImpl implements HabitatService {
     @Override
 public HabitatDashboardResponse getDashboard() {
 
-    Double quality = habitatRepository.getAverageHabitatQuality();
+    Double quality = habitatRepository.getAverageHabitatQualityScore();
 
-    Double suitability = habitatRepository.getAverageSuitability();
+    Double suitability = habitatRepository.getAverageSuitabilityScore();
 
     if (quality == null)
         quality = 0.0;

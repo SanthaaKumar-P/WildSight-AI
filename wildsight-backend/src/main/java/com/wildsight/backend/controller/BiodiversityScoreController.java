@@ -152,15 +152,6 @@ public ResponseEntity<EcosystemMonitoringResponse> getEcosystemMonitoring(){
 
 }
 
-@Operation(summary = "Analyze conservation priority")
-@PreAuthorize("isAuthenticated()")
-@GetMapping("/conservation-priority")
-public ResponseEntity<ConservationPriorityResponse> getConservationPriority() {
-
-    return ResponseEntity.ok(
-            biodiversityScoreService.getConservationPriority()
-    );
-}
 
 
 }
