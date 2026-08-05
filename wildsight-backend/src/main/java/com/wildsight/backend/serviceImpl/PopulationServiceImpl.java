@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -27,67 +28,64 @@ public class PopulationServiceImpl implements PopulationService {
 
 
 
-    @Override
-    public PopulationDashboardResponse getDashboard() {
+   @Override
+public PopulationDashboardResponse getDashboard() {
 
 
-        Long totalPopulation =
-                populationEstimateRepository
-                        .getTotalEstimatedPopulation();
+    Long totalPopulation =
+            populationEstimateRepository
+                    .getTotalEstimatedPopulation();
 
 
-        Long speciesRichness =
-                populationEstimateRepository
-                        .getSpeciesCount();
+    Long speciesRichness =
+            populationEstimateRepository
+                    .getSpeciesCount();
 
 
-        Double density =
-                populationEstimateRepository
-                        .getAverageDensity() != null
-
-                ? populationEstimateRepository
-                        .getAverageDensity()
-                        .doubleValue()
-
-                : 0.0;
+    BigDecimal densityValue =
+            populationEstimateRepository
+                    .getAverageDensity();
 
 
-
-        Double growthRate =
-                populationEstimateRepository
-                        .getAverageGrowthRate() != null
-
-                ? populationEstimateRepository
-                        .getAverageGrowthRate()
-                        .doubleValue()
-
-                : 0.0;
+    BigDecimal growthValue =
+            populationEstimateRepository
+                    .getAverageGrowthRate();
 
 
 
-        return PopulationDashboardResponse.builder()
+    return PopulationDashboardResponse.builder()
 
-                .totalPopulation(
-                        totalPopulation == null ? 0 : totalPopulation
-                )
+            .totalPopulation(
+                    totalPopulation == null
+                    ? 0L
+                    : totalPopulation
+            )
 
-                .speciesRichness(
-                        speciesRichness == null ? 0 : speciesRichness
-                )
+            .speciesRichness(
+                    speciesRichness == null
+                    ? 0L
+                    : speciesRichness
+            )
 
-                .populationDensity(
-                        density
-                )
+            .populationDensity(
+                    densityValue == null
+                    ? 0.0
+                    : densityValue.doubleValue()
+            )
 
-                .growthRate(
-                        growthRate
-                )
+            .growthRate(
+                    growthValue == null
+                    ? 0.0
+                    : growthValue.doubleValue()
+            )
 
-                .monitoringSites(0L)
+            .monitoringSites(
+                    2L
+            )
 
-                .build();
+            .build();
 
-    }
+}
 
 
 

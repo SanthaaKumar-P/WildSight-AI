@@ -20,28 +20,35 @@ public interface PopulationEstimateRepository
 
 
     // ===============================
-    // Population Metrics
+    // Total Population
     // ===============================
 
-
     @Query("""
-            SELECT SUM(p.estimatedPopulation)
+            SELECT COALESCE(SUM(p.estimatedPopulation),0)
             FROM PopulationEstimate p
             """)
     Long getTotalEstimatedPopulation();
 
 
 
+    // ===============================
+    // Average Density
+    // ===============================
+
     @Query("""
-            SELECT AVG(p.density)
+            SELECT COALESCE(AVG(p.density),0)
             FROM PopulationEstimate p
             """)
     BigDecimal getAverageDensity();
 
 
 
+    // ===============================
+    // Average Growth Rate
+    // ===============================
+
     @Query("""
-            SELECT AVG(p.growthRate)
+            SELECT COALESCE(AVG(p.growthRate),0)
             FROM PopulationEstimate p
             """)
     BigDecimal getAverageGrowthRate();
@@ -49,10 +56,10 @@ public interface PopulationEstimateRepository
 
 
 
+
     // ===============================
     // Species Richness
     // ===============================
-
 
     @Query("""
             SELECT COUNT(DISTINCT p.species.speciesId)
@@ -63,17 +70,20 @@ public interface PopulationEstimateRepository
 
 
 
-    // ===============================
-    // Species Distribution Mapping
-    // ===============================
 
+    // ===============================
+    // Species Distribution
+    // ===============================
 
     @Query("""
             SELECT p
             FROM PopulationEstimate p
+            JOIN FETCH p.species
+            JOIN FETCH p.survey
             ORDER BY p.estimatedPopulation DESC
             """)
     List<PopulationEstimate> getSpeciesDistribution();
+
 
 
 
@@ -82,14 +92,14 @@ public interface PopulationEstimateRepository
     // Migration Analysis
     // ===============================
 
-
     @Query("""
             SELECT p
             FROM PopulationEstimate p
+            JOIN FETCH p.species
+            JOIN FETCH p.survey
             WHERE p.migrationPattern IS NOT NULL
             """)
     List<PopulationEstimate> getMigrationPatterns();
-
 
 
 }

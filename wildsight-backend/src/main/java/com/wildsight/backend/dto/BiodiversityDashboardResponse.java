@@ -1,33 +1,38 @@
 package com.wildsight.backend.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
+import lombok.*;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BiodiversityDashboardResponse {
+
 
     private Long totalAssessments;
 
+
     private Integer totalSpecies;
 
-    private BigDecimal averageSpeciesDiversity;
 
-    private BigDecimal averageHabitatQuality;
+    private Double averageSpeciesDiversity;
 
-    private BigDecimal averageEcosystemHealth;
 
-    private BigDecimal averageOverallScore;
+    private Double averageHabitatQuality;
+
+
+    private Double averageEcosystemHealth;
+
+
+    private Double averageOverallScore;
+
 
     private Long healthyCount;
 
+
     private Long vulnerableCount;
 
+
     private Long criticalCount;
+
 }

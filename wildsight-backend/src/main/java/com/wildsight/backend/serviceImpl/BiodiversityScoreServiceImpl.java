@@ -1,24 +1,31 @@
 package com.wildsight.backend.serviceImpl;
+
+
 import com.wildsight.backend.dto.BiodiversityDashboardResponse;
-import com.wildsight.backend.dto.HabitatHealthResponse;
-import java.math.BigDecimal;
+import com.wildsight.backend.dto.BiodiversityIndexResponse;
 import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
-import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.EcosystemMonitoringResponse;
+import com.wildsight.backend.dto.HabitatHealthResponse;
+import com.wildsight.backend.dto.SpeciesDiversityResponse;
+
 import com.wildsight.backend.entity.BiodiversityScore;
 import com.wildsight.backend.entity.Habitat;
 import com.wildsight.backend.entity.Survey;
+
 import com.wildsight.backend.repository.BiodiversityScoreRepository;
 import com.wildsight.backend.repository.HabitatRepository;
 import com.wildsight.backend.repository.SurveyRepository;
+
 import com.wildsight.backend.service.BiodiversityScoreService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
-import com.wildsight.backend.dto.BiodiversityIndexResponse;
+
+import java.math.BigDecimal;
 import java.util.List;
-import com.wildsight.backend.dto.SpeciesDiversityResponse;
-import com.wildsight.backend.dto.EcosystemMonitoringResponse;
+
 @Service
 @RequiredArgsConstructor
 public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
@@ -116,25 +123,70 @@ public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
     @Override
 public BiodiversityDashboardResponse getDashboard() {
 
+
     return BiodiversityDashboardResponse.builder()
-            .totalAssessments(biodiversityScoreRepository.count())
-            .totalSpecies(biodiversityScoreRepository.getTotalSpecies())
+
+            .totalAssessments(
+                    biodiversityScoreRepository.count()
+            )
+
+
+            .totalSpecies(
+                    biodiversityScoreRepository.getTotalSpecies()
+            )
+
+
             .averageSpeciesDiversity(
-                    defaultValue(biodiversityScoreRepository.getAverageSpeciesDiversity()))
+                    defaultValue(
+                            biodiversityScoreRepository
+                                    .getAverageSpeciesDiversity()
+                    )
+            )
+
+
             .averageHabitatQuality(
-                    defaultValue(biodiversityScoreRepository.getAverageHabitatQuality()))
+                    defaultValue(
+                            biodiversityScoreRepository
+                                    .getAverageHabitatQuality()
+                    )
+            )
+
+
+            .averageEcosystemHealth(
+                    defaultValue(
+                            biodiversityScoreRepository
+                                    .getAverageEcosystemHealth()
+                    )
+            )
+
+
             .averageOverallScore(
-                    defaultValue(biodiversityScoreRepository.getAverageOverallScore()))
+                    defaultValue(
+                            biodiversityScoreRepository
+                                    .getAverageOverallScore()
+                    )
+            )
+
+
             .healthyCount(
-                    biodiversityScoreRepository.countByHealthStatus("Healthy"))
+                    biodiversityScoreRepository
+                            .countByHealthStatus("Healthy")
+            )
+
+
             .vulnerableCount(
-                    biodiversityScoreRepository.countByHealthStatus("Vulnerable"))
+                    biodiversityScoreRepository
+                            .countByHealthStatus("Vulnerable")
+            )
+
+
             .criticalCount(
-                    biodiversityScoreRepository.countByHealthStatus("Critical"))
+                    biodiversityScoreRepository
+                            .countByHealthStatus("Critical")
+            )
+
+
             .build();
-}
-private BigDecimal defaultValue(BigDecimal value) {
-    return value != null ? value : BigDecimal.ZERO;
 }
 
 @Override
@@ -323,16 +375,18 @@ public HabitatHealthResponse getHabitatHealthAssessment() {
 public EcosystemMonitoringResponse getEcosystemMonitoring() {
 
 
-    Double healthScore =
+    BigDecimal healthValue =
             biodiversityScoreRepository
                     .getAverageEcosystemHealth();
 
 
-    if(healthScore == null){
+    Double healthScore =
+            healthValue != null
+            ?
+            healthValue.doubleValue()
+            :
+            0.0;
 
-        healthScore = 0.0;
-
-    }
 
 
     String monitoringStatus;
@@ -374,12 +428,23 @@ public EcosystemMonitoringResponse getEcosystemMonitoring() {
                     Math.round(healthScore * 100.0) / 100.0
             )
 
-            .monitoringStatus(monitoringStatus)
+            .monitoringStatus(
+                    monitoringStatus
+            )
 
-            .riskLevel(riskLevel)
+            .riskLevel(
+                    riskLevel
+            )
 
             .build();
 
 }
-    
+private Double defaultValue(BigDecimal value) {
+
+    if (value == null) {
+        return 0.0;
+    }
+
+    return value.doubleValue();
+}
 }
