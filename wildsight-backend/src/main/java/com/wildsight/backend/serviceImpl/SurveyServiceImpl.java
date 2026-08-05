@@ -91,16 +91,46 @@ public class SurveyServiceImpl implements SurveyService {
 
     private SurveyResponse mapToResponse(Survey survey) {
 
-        return SurveyResponse.builder()
-                .surveyId(survey.getSurveyId())
-                .userId(survey.getUser().getUserId())
-                .surveyName(survey.getSurveyName())
-                .description(survey.getDescription())
-                .habitatType(survey.getHabitatType())
-                .protectedArea(survey.getProtectedArea())
-                .surveyDate(survey.getSurveyDate())
-                .status(survey.getStatus())
-                .createdAt(survey.getCreatedAt())
-                .build();
-    }
+    return SurveyResponse.builder()
+
+            .surveyId(
+                    survey.getSurveyId()
+            )
+
+            .userId(
+                    survey.getUser() != null
+                    ? survey.getUser().getUserId()
+                    : null
+            )
+
+            .surveyName(
+                    survey.getSurveyName()
+            )
+
+            .description(
+                    survey.getDescription()
+            )
+
+            .habitatType(
+                    survey.getHabitatType()
+            )
+
+            .protectedArea(
+                    survey.getProtectedArea()
+            )
+
+            .surveyDate(
+                    survey.getSurveyDate()
+            )
+
+            .status(
+                    survey.getStatus()
+            )
+
+            .createdAt(
+                    survey.getCreatedAt()
+            )
+
+            .build();
+}
 }

@@ -8,7 +8,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class SurveyRequest {
+public class SurveyRequest{
 
     @NotNull(message = "User Id is required")
     private Long userId;

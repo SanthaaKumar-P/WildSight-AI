@@ -124,69 +124,98 @@ public class BiodiversityScoreServiceImpl implements BiodiversityScoreService {
 public BiodiversityDashboardResponse getDashboard() {
 
 
+    long totalAssessments =
+            biodiversityScoreRepository.count();
+
+
+
+    Integer totalSpecies =
+            biodiversityScoreRepository.getTotalSpecies();
+
+
+
+    BigDecimal diversity =
+            biodiversityScoreRepository
+                    .getAverageSpeciesDiversity();
+
+
+
+    BigDecimal habitat =
+            biodiversityScoreRepository
+                    .getAverageHabitatQuality();
+
+
+
+    BigDecimal ecosystem =
+            biodiversityScoreRepository
+                    .getAverageEcosystemHealth();
+
+
+
+    BigDecimal overall =
+            biodiversityScoreRepository
+                    .getAverageOverallScore();
+
+
+
     return BiodiversityDashboardResponse.builder()
 
             .totalAssessments(
-                    biodiversityScoreRepository.count()
+                    totalAssessments
             )
-
 
             .totalSpecies(
-                    biodiversityScoreRepository.getTotalSpecies()
+                    totalSpecies == null ? 0 : totalSpecies
             )
 
-
             .averageSpeciesDiversity(
-                    defaultValue(
-                            biodiversityScoreRepository
-                                    .getAverageSpeciesDiversity()
-                    )
+                    diversity == null 
+                    ? 0.0 
+                    : diversity.doubleValue()
             )
 
 
             .averageHabitatQuality(
-                    defaultValue(
-                            biodiversityScoreRepository
-                                    .getAverageHabitatQuality()
-                    )
+                    habitat == null
+                    ? 0.0
+                    : habitat.doubleValue()
             )
 
 
             .averageEcosystemHealth(
-                    defaultValue(
-                            biodiversityScoreRepository
-                                    .getAverageEcosystemHealth()
-                    )
+                    ecosystem == null
+                    ? 0.0
+                    : ecosystem.doubleValue()
             )
 
 
             .averageOverallScore(
-                    defaultValue(
-                            biodiversityScoreRepository
-                                    .getAverageOverallScore()
-                    )
+                    overall == null
+                    ? 0.0
+                    : overall.doubleValue()
             )
 
 
             .healthyCount(
                     biodiversityScoreRepository
-                            .countByHealthStatus("Healthy")
+                    .countByHealthStatus("Healthy")
             )
 
 
             .vulnerableCount(
                     biodiversityScoreRepository
-                            .countByHealthStatus("Vulnerable")
+                    .countByHealthStatus("Vulnerable")
             )
 
 
             .criticalCount(
                     biodiversityScoreRepository
-                            .countByHealthStatus("Critical")
+                    .countByHealthStatus("Critical")
             )
 
 
             .build();
+
 }
 
 @Override
