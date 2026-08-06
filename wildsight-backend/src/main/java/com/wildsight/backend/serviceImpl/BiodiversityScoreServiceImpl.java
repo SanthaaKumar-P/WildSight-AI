@@ -7,6 +7,7 @@ import com.wildsight.backend.dto.BiodiversityScoreRequest;
 import com.wildsight.backend.dto.BiodiversityScoreResponse;
 import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 import com.wildsight.backend.dto.HabitatHealthResponse;
+import com.wildsight.backend.dto.SpeciesDiversityChartResponse;
 import com.wildsight.backend.dto.SpeciesDiversityResponse;
 
 import com.wildsight.backend.entity.BiodiversityScore;
@@ -475,5 +476,13 @@ private Double defaultValue(BigDecimal value) {
     }
 
     return value.doubleValue();
+}
+@Override
+public List<SpeciesDiversityChartResponse>
+getSpeciesDiversityChart() {
+
+    return biodiversityScoreRepository
+            .getSpeciesDiversityChart();
+
 }
 }

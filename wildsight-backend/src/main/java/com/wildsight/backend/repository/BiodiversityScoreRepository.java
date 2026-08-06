@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-
+import com.wildsight.backend.dto.SpeciesDiversityChartResponse;
 @Repository
 public interface BiodiversityScoreRepository 
         extends JpaRepository<BiodiversityScore, Long> {
@@ -128,6 +129,30 @@ public interface BiodiversityScoreRepository
             FROM BiodiversityScore b
             """)
     BigDecimal getAverageEcosystemHealth();
+
+    @Query("""
+SELECT new com.wildsight.backend.dto.SpeciesDiversityChartResponse(
+
+    s.commonName,
+
+    AVG(b.speciesDiversityScore)
+
+)
+
+FROM BiodiversityScore b
+
+JOIN PopulationEstimate p
+ON p.survey.surveyId = b.survey.surveyId
+
+JOIN Species s
+ON s.speciesId = p.species.speciesId
+
+GROUP BY s.commonName
+
+ORDER BY AVG(b.speciesDiversityScore) DESC
+
+""")
+List<SpeciesDiversityChartResponse> getSpeciesDiversityChart();
 
 
 }

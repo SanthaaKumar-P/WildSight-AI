@@ -6,6 +6,7 @@ import com.wildsight.backend.dto.BiodiversityScoreResponse;
 import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.EcosystemMonitoringResponse;
 import com.wildsight.backend.dto.HabitatHealthResponse;
+import com.wildsight.backend.dto.SpeciesDiversityChartResponse;
 import com.wildsight.backend.dto.SpeciesDiversityResponse;
 import com.wildsight.backend.service.BiodiversityScoreService;
 import com.wildsight.backend.dto.BiodiversityIndexResponse;
@@ -151,7 +152,20 @@ public ResponseEntity<EcosystemMonitoringResponse> getEcosystemMonitoring(){
     );
 
 }
+@Operation(summary = "Species diversity chart")
+@PreAuthorize("isAuthenticated()")
+@GetMapping("/species-chart")
+public ResponseEntity<List<SpeciesDiversityChartResponse>>
+getSpeciesChart(){
 
+    return ResponseEntity.ok(
+
+            biodiversityScoreService
+                    .getSpeciesDiversityChart()
+
+    );
+
+}
 
 
 }
