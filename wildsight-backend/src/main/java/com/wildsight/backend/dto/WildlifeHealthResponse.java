@@ -21,5 +21,6 @@ public class WildlifeHealthResponse {
     private Double ecosystemHealthScore;
 
     private String conservationStatus;
-
+    
+     private String recommendation;
 }

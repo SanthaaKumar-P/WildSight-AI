@@ -77,39 +77,48 @@ public class UploadedImageController {
 
     // ---------------- REAL IMAGE UPLOAD ----------------
     @Operation(summary = "Upload real image")
-    @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER','VOLUNTEER')")
-    @PostMapping(
-            value = "/upload",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public UploadedImageResponse uploadImage(
 
-            @RequestParam("file") MultipartFile file,
+@PreAuthorize(
+"hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER','VOLUNTEER')"
+)
 
-            @RequestParam Long observationId,
+@PostMapping(
+        value = "/upload",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+)
 
-            @RequestParam Long uploadedBy,
+public UploadedImageResponse uploadImage(
 
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime capturedAt,
+        @RequestParam("file")
+        MultipartFile file,
 
-            @RequestParam BigDecimal imageQuality
+        @RequestParam
+        Long observationId,
 
-    ) throws IOException {
+        @RequestParam
+        Long uploadedBy,
 
-        System.out.println("UPLOAD API HIT");
-        System.out.println(file.getOriginalFilename());
+        @RequestParam
+        @DateTimeFormat(
+        iso = DateTimeFormat.ISO.DATE_TIME)
+        LocalDateTime capturedAt,
 
-        return uploadedImageService.uploadImage(
-                file,
-                observationId,
-                uploadedBy,
-                capturedAt,
-                imageQuality
-        );
-    }
+        @RequestParam
+        BigDecimal imageQuality
 
+) throws IOException {
+
+
+    return uploadedImageService.uploadImage(
+            file,
+            observationId,
+            uploadedBy,
+            capturedAt,
+            imageQuality
+    );
+
+}
     // ---------------- TEST API ----------------
 
     @Operation(summary = "Test image upload")
