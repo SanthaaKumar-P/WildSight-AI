@@ -1,17 +1,18 @@
 package com.wildsight.backend.serviceImpl;
 
-
 import com.wildsight.backend.dto.UploadedImageRequest;
 import com.wildsight.backend.dto.UploadedImageResponse;
 import com.wildsight.backend.dto.ai.AnimalDetection;
 
 import com.wildsight.backend.entity.DetectionResult;
 import com.wildsight.backend.entity.Observation;
+import com.wildsight.backend.entity.Species;
 import com.wildsight.backend.entity.UploadedImage;
 import com.wildsight.backend.entity.User;
 
 import com.wildsight.backend.repository.DetectionResultRepository;
 import com.wildsight.backend.repository.ObservationRepository;
+import com.wildsight.backend.repository.SpeciesRepository;
 import com.wildsight.backend.repository.UploadedImageRepository;
 import com.wildsight.backend.repository.UserRepository;
 
@@ -19,10 +20,8 @@ import com.wildsight.backend.service.AIService;
 import com.wildsight.backend.service.UploadedImageService;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -32,13 +31,12 @@ import java.util.List;
 import java.util.UUID;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class UploadedImageServiceImpl 
         implements UploadedImageService {
 
-
+   private final SpeciesRepository speciesRepository;
 
     private final UploadedImageRepository uploadedImageRepository;
 
@@ -315,21 +313,75 @@ public class UploadedImageServiceImpl
 
         // ================= AI CALL =================
 
+String predictedSpecies =
+        aiService.predictImage(
+                path.toFile()
+        );
 
-        String species =
-                aiService.predictImage(
-                        path.toFile()
+
+AnimalDetection detection =
+        aiService.detectAnimals(
+                path.toFile()
+        );
+
+
+
+// ================= UPDATE SPECIES DATABASE =================
+
+
+if(detection.getDetections()!=null)
+{
+
+    detection.getDetections()
+    .forEach(animal -> {
+
+
+        boolean exists =
+                speciesRepository
+                .existsByCommonNameIgnoreCase(
+                        animal.getSpecies()
                 );
 
 
-        AnimalDetection detection =
-                aiService.detectAnimals(
-                        path.toFile()
-                );
+        if(!exists)
+        {
+
+            Species newSpecies =
+                    Species.builder()
+
+                    .commonName(
+                            animal.getSpecies()
+                    )
+
+                    .scientificName(
+                            animal.getScientificName()
+                    )
+
+                    .conservationStatus(
+                            animal.getSpeciesStatus()
+                    )
+
+                    .iucnStatus(
+                            animal.getSpeciesStatus()
+                    )
+
+                    .description(
+                            "Automatically identified by AI image analysis"
+                    )
+
+                    .build();
 
 
 
+            speciesRepository.save(newSpecies);
 
+        }
+
+
+    });
+
+}
+   
 
         // ================= SAVE DETECTION RESULT =================
 
@@ -454,7 +506,7 @@ public class UploadedImageServiceImpl
 
 
                 .predictedSpecies(
-                        species
+                        predictedSpecies
                 )
 
                 .animalCount(

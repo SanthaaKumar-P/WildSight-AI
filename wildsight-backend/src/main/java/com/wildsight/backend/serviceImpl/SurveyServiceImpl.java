@@ -1,5 +1,6 @@
 package com.wildsight.backend.serviceImpl;
 
+import com.wildsight.backend.dto.SurveyDashboardResponse;
 import com.wildsight.backend.dto.SurveyRequest;
 import com.wildsight.backend.dto.SurveyResponse;
 import com.wildsight.backend.entity.Survey;
@@ -9,7 +10,7 @@ import com.wildsight.backend.repository.UserRepository;
 import com.wildsight.backend.service.SurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import com.wildsight.backend.dto.SurveyDashboardResponse;
 import java.util.List;
 
 @Service
@@ -88,7 +89,82 @@ public class SurveyServiceImpl implements SurveyService {
 
         surveyRepository.delete(survey);
     }
+    @Override
+public SurveyDashboardResponse getDashboard(){
 
+
+    Long total =
+            surveyRepository.count();
+
+
+    Long active =
+            surveyRepository.countByStatus("ACTIVE");
+
+
+    Long completed =
+            surveyRepository.countByStatus("COMPLETED");
+
+
+    Long pending =
+            surveyRepository.countByStatus("PENDING");
+
+
+
+    Long forest =
+            surveyRepository.countHabitat("Forest");
+
+
+    Long grassland =
+            surveyRepository.countHabitat("Grassland");
+
+
+    Long wetland =
+            surveyRepository.countHabitat("Wetland");
+
+
+
+    String dominant="Forest";
+
+    Long max=forest;
+
+
+    if(grassland > max){
+
+        dominant="Grassland";
+        max=grassland;
+
+    }
+
+
+    if(wetland > max){
+
+        dominant="Wetland";
+
+    }
+
+
+
+    return SurveyDashboardResponse.builder()
+
+            .totalSurveys(total)
+
+            .activeSurveys(active)
+
+            .completedSurveys(completed)
+
+            .pendingSurveys(pending)
+
+            .forestSurveys(forest)
+
+            .grasslandSurveys(grassland)
+
+            .wetlandSurveys(wetland)
+
+            .dominantHabitat(dominant)
+
+            .build();
+
+}
     private SurveyResponse mapToResponse(Survey survey) {
 
     return SurveyResponse.builder()
