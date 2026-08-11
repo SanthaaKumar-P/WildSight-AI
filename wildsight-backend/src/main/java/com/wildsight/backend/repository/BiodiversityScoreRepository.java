@@ -188,4 +188,6 @@ WHERE b.survey.location.locationId = :locationId
 Integer getSpeciesCountByLocation(
         @Param("locationId") Long locationId
 );
+
+  boolean existsBySurveySurveyId(Long surveyId);
 }

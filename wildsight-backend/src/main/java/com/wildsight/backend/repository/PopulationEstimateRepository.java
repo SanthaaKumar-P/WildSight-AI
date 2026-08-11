@@ -160,4 +160,6 @@ WHERE p.survey.location.locationId = :locationId
 BigDecimal getGrowthRateByLocation(
         @Param("locationId") Long locationId
 );
+
+boolean existsBySurveySurveyId(Long surveyId);
 }
