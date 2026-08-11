@@ -39,7 +39,7 @@ public interface BiodiversityScoreRepository
             SELECT AVG(b.habitatQualityScore)
             FROM BiodiversityScore b
             """)
-    BigDecimal getAverageHabitatQuality();
+    Double getAverageHabitatQuality();
 
 
 
@@ -190,4 +190,15 @@ Integer getSpeciesCountByLocation(
 );
 
   boolean existsBySurveySurveyId(Long surveyId);
+
+  @Query("""
+SELECT b
+FROM BiodiversityScore b
+JOIN FETCH b.survey sv
+JOIN FETCH sv.location l
+WHERE l.locationId = :locationId
+""")
+List<BiodiversityScore> findBiodiversityByLocation(
+        @Param("locationId") Long locationId
+);
 }

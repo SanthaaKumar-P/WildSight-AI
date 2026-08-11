@@ -162,4 +162,16 @@ BigDecimal getGrowthRateByLocation(
 );
 
 boolean existsBySurveySurveyId(Long surveyId);
+
+@Query("""
+SELECT p 
+FROM PopulationEstimate p
+JOIN FETCH p.species s
+JOIN FETCH p.survey sv
+JOIN FETCH sv.location l
+WHERE l.locationId = :locationId
+""")
+List<PopulationEstimate> findPopulationByLocation(
+        @Param("locationId") Long locationId
+);
 }

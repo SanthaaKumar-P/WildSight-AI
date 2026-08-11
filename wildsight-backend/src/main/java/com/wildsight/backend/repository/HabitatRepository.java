@@ -1,6 +1,9 @@
 package com.wildsight.backend.repository;
 
 import com.wildsight.backend.entity.Habitat;
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -175,6 +178,16 @@ FROM Habitat h
 WHERE h.survey.location.locationId = :locationId
 """)
 Double getWaterQualityByLocation(
+        @Param("locationId") Long locationId
+);
+@Query("""
+SELECT h
+FROM Habitat h
+JOIN FETCH h.survey sv
+JOIN FETCH sv.location l
+WHERE l.locationId = :locationId
+""")
+List<Habitat> findHabitatByLocation(
         @Param("locationId") Long locationId
 );
 
