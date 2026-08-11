@@ -6,6 +6,8 @@ import lombok.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "surveys")
 @Data
@@ -43,4 +45,9 @@ public class Survey {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name="location_id")
+@JsonIgnoreProperties({"surveys"})
+private ConservationLocation location;
 }

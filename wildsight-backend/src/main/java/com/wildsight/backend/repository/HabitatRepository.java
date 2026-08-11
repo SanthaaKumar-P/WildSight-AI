@@ -3,6 +3,7 @@ package com.wildsight.backend.repository;
 import com.wildsight.backend.entity.Habitat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -131,5 +132,50 @@ public interface HabitatRepository extends JpaRepository<Habitat, Long> {
             WHERE h.suitabilityScore < 50
             """)
     Long countUnsuitableHabitats();
+
+    // ================= LOCATION BASED HABITAT =================
+
+
+@Query("""
+SELECT AVG(h.habitatQualityScore)
+FROM Habitat h
+WHERE h.survey.location.locationId = :locationId
+""")
+Double getHabitatQualityByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT AVG(h.degradationLevel)
+FROM Habitat h
+WHERE h.survey.location.locationId = :locationId
+""")
+Double getDegradationByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT AVG(h.vegetationDensity)
+FROM Habitat h
+WHERE h.survey.location.locationId = :locationId
+""")
+Double getVegetationDensityByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT AVG(h.waterQuality)
+FROM Habitat h
+WHERE h.survey.location.locationId = :locationId
+""")
+Double getWaterQualityByLocation(
+        @Param("locationId") Long locationId
+);
 
 }

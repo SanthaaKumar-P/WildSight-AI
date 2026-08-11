@@ -44,4 +44,6 @@ public class PopulationEstimate {
     @CreationTimestamp
     @Column(name = "calculated_at", updatable = false)
     private LocalDateTime calculatedAt;
+
+   
 }

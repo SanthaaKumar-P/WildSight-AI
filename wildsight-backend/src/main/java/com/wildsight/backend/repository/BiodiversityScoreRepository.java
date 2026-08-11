@@ -5,6 +5,7 @@ import com.wildsight.backend.entity.BiodiversityScore;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -154,5 +155,37 @@ ORDER BY AVG(b.speciesDiversityScore) DESC
 """)
 List<SpeciesDiversityChartResponse> getSpeciesDiversityChart();
 
+// ================= LOCATION BASED BIODIVERSITY =================
 
+
+@Query("""
+SELECT AVG(b.speciesDiversityScore)
+FROM BiodiversityScore b
+WHERE b.survey.location.locationId = :locationId
+""")
+Double getBiodiversityByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT AVG(b.overallScore)
+FROM BiodiversityScore b
+WHERE b.survey.location.locationId = :locationId
+""")
+Double getOverallScoreByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT COALESCE(SUM(b.speciesCount),0)
+FROM BiodiversityScore b
+WHERE b.survey.location.locationId = :locationId
+""")
+Integer getSpeciesCountByLocation(
+        @Param("locationId") Long locationId
+);
 }

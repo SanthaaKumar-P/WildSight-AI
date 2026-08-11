@@ -5,6 +5,7 @@ import com.wildsight.backend.entity.PopulationEstimate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
@@ -101,5 +102,62 @@ public interface PopulationEstimateRepository
             """)
     List<PopulationEstimate> getMigrationPatterns();
 
+    // ================= LOCATION BASED POPULATION =================
 
+
+@Query("""
+SELECT COALESCE(SUM(p.estimatedPopulation),0)
+FROM PopulationEstimate p
+WHERE p.survey.location.locationId = :locationId
+""")
+Long getPopulationByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT COUNT(DISTINCT p.species.speciesId)
+FROM PopulationEstimate p
+WHERE p.survey.location.locationId = :locationId
+""")
+Long getSpeciesCountByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT p
+FROM PopulationEstimate p
+JOIN FETCH p.species
+JOIN FETCH p.survey
+WHERE p.survey.location.locationId = :locationId
+ORDER BY p.estimatedPopulation DESC
+""")
+List<PopulationEstimate> getSpeciesDistributionByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT AVG(p.density)
+FROM PopulationEstimate p
+WHERE p.survey.location.locationId = :locationId
+""")
+BigDecimal getAverageDensityByLocation(
+        @Param("locationId") Long locationId
+);
+
+
+
+@Query("""
+SELECT AVG(p.growthRate)
+FROM PopulationEstimate p
+WHERE p.survey.location.locationId = :locationId
+""")
+BigDecimal getGrowthRateByLocation(
+        @Param("locationId") Long locationId
+);
 }

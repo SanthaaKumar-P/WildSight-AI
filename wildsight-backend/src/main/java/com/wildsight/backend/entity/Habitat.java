@@ -54,4 +54,8 @@ private Double airQuality;
 
 @Column(name = "suitability_score")
 private Double suitabilityScore;
+
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name="survey_id")
+private Survey survey;
 }

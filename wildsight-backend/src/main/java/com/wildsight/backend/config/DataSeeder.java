@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
+
 @Component
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
@@ -30,48 +31,33 @@ public class DataSeeder implements CommandLineRunner {
 
     private final BiodiversityScoreRepository biodiversityScoreRepository;
 
+    private final ConservationRecommendationRepository recommendationRepository;
+
+    private final ConservationLocationRepository locationRepository;
+
 
 
     @Override
     public void run(String... args) {
 
 
-        System.out.println("========== WildSight Seeder Started ==========");
-
-
         System.out.println(
-                "Species Count : "
-                + speciesRepository.count()
-        );
-
-        System.out.println(
-                "Habitat Count : "
-                + habitatRepository.count()
-        );
-
-        System.out.println(
-                "Population Count : "
-                + populationEstimateRepository.count()
-        );
-
-        System.out.println(
-                "Biodiversity Count : "
-                + biodiversityScoreRepository.count()
+                "========== WildSight Seeder Started =========="
         );
 
 
 
         User user =
                 userRepository
-                        .findByEmail("admin@gmail.com")
-                        .orElse(null);
+                .findByEmail("admin@gmail.com")
+                .orElse(null);
 
 
 
         if(user == null){
 
             System.out.println(
-                    "Admin user not found. Seeder stopped"
+                    "Admin user not found"
             );
 
             return;
@@ -80,236 +66,140 @@ public class DataSeeder implements CommandLineRunner {
 
 
         /*
-         * Insert Habitat Data
-         */
+        ======================================
+        FETCH LOCATIONS
+        ======================================
+        */
 
-        Habitat westernGhats =
-                habitatRepository.findAll()
-                        .stream()
-                        .filter(
-                                h -> h.getHabitatName()
-                                        .equals("Western Ghats")
-                        )
-                        .findFirst()
-                        .orElseGet(() ->
 
-                                habitatRepository.save(
-
-                                Habitat.builder()
-
-                                .habitatName("Western Ghats")
-
-                                .habitatType("Forest")
-
-                                .vegetationType(
-                                        "Tropical Evergreen"
-                                )
-
-                                .description(
-                                        "Biodiversity hotspot region"
-                                )
-
-                                .habitatQualityScore(92.0)
-
-                                .degradationLevel(15.0)
-
-                                .vegetationDensity(88.0)
-
-                                .temperature(24.0)
-
-                                .humidity(80.0)
-
-                                .rainfall(250.0)
-
-                                .waterQuality(90.0)
-
-                                .airQuality(95.0)
-
-                                .suitabilityScore(94.0)
-
-                                .build()
-                        ));
+        ConservationLocation bandipur =
+                locationRepository
+                .findByLocationName(
+                        "Bandipur Tiger Reserve"
+                )
+                .orElse(null);
 
 
 
-
-        Habitat nilgiris =
-                habitatRepository.findAll()
-                        .stream()
-                        .filter(
-                                h -> h.getHabitatName()
-                                        .equals("Nilgiris")
-                        )
-                        .findFirst()
-                        .orElseGet(() ->
+        ConservationLocation gir =
+                locationRepository
+                .findByLocationName(
+                        "Gir National Park"
+                )
+                .orElse(null);
 
 
-                                habitatRepository.save(
 
-                                Habitat.builder()
+        if(bandipur == null || gir == null){
 
-                                .habitatName("Nilgiris")
+            System.out.println(
+                    "Location missing"
+            );
 
-                                .habitatType(
-                                        "Mountain Forest"
-                                )
+            return;
+        }
 
-                                .vegetationType(
-                                        "Grassland"
-                                )
-
-                                .description(
-                                        "Elephant migration corridor"
-                                )
-
-                                .habitatQualityScore(85.0)
-
-                                .degradationLevel(25.0)
-
-                                .vegetationDensity(80.0)
-
-                                .temperature(20.0)
-
-                                .humidity(75.0)
-
-                                .rainfall(180.0)
-
-                                .waterQuality(85.0)
-
-                                .airQuality(90.0)
-
-                                .suitabilityScore(88.0)
-
-                                .build()
-                        ));
 
 
 
 
         /*
- * Insert Species
- */
+        ======================================
+        SPECIES
+        ======================================
+        */
 
 
-Species tiger =
-        speciesRepository.findByCommonName(
-                "Bengal Tiger"
-        )
-        .orElseGet(() ->
-
-        speciesRepository.save(
-
-        Species.builder()
-
-        .categoryId(1L)
-
-        .commonName(
-                "Bengal Tiger"
-        )
-
-        .scientificName(
-                "Panthera tigris"
-        )
-
-        .conservationStatus(
-                "Endangered"
-        )
-
-        .iucnStatus(
-                "EN"
-        )
-
-        .description(
-                "Large carnivore species"
-        )
-
-        .build()
-));
+        Species tiger =
+                speciesRepository
+                .findByCommonName(
+                        "Bengal Tiger"
+                )
+                .orElseGet(() ->
 
 
+                speciesRepository.save(
 
+                Species.builder()
 
+                .categoryId(1L)
 
-Species elephant =
-        speciesRepository.findByCommonName(
-                "Asian Elephant"
-        )
-        .orElseGet(() ->
+                .commonName(
+                        "Bengal Tiger"
+                )
 
-        speciesRepository.save(
+                .scientificName(
+                        "Panthera tigris"
+                )
 
-        Species.builder()
+                .conservationStatus(
+                        "Endangered"
+                )
 
-        .categoryId(1L)
+                .iucnStatus(
+                        "EN"
+                )
 
-        .commonName(
-                "Asian Elephant"
-        )
+                .description(
+                        "Tiger species"
+                )
 
-        .scientificName(
-                "Elephas maximus"
-        )
+                .build()
 
-        .conservationStatus(
-                "Endangered"
-        )
-
-        .iucnStatus(
-                "EN"
-        )
-
-        .description(
-                "Large herbivore species"
-        )
-
-        .build()
-));
+                ));
 
 
 
 
 
-Species leopard =
-        speciesRepository.findByCommonName(
-                "Indian Leopard"
-        )
-        .orElseGet(() ->
+        Species lion =
+                speciesRepository
+                .findByCommonName(
+                        "Asiatic Lion"
+                )
+                .orElseGet(() ->
 
-        speciesRepository.save(
 
-        Species.builder()
+                speciesRepository.save(
 
-        .categoryId(1L)
+                Species.builder()
 
-        .commonName(
-                "Indian Leopard"
-        )
+                .categoryId(1L)
 
-        .scientificName(
-                "Panthera pardus"
-        )
+                .commonName(
+                        "Asiatic Lion"
+                )
 
-        .conservationStatus(
-                "Vulnerable"
-        )
+                .scientificName(
+                        "Panthera leo persica"
+                )
 
-        .iucnStatus(
-                "VU"
-        )
+                .conservationStatus(
+                        "Endangered"
+                )
 
-        .description(
-                "Forest predator species"
-        )
+                .iucnStatus(
+                        "EN"
+                )
 
-        .build()
-));
+                .description(
+                        "Lion species"
+                )
+
+                .build()
+
+                ));
+
+
 
 
 
 
         /*
-         * Insert Surveys
-         */
+        ======================================
+        SURVEYS FIRST
+        ======================================
+        */
 
 
         Survey tigerSurvey =
@@ -319,12 +209,14 @@ Species leopard =
 
                 .user(user)
 
+                .location(bandipur)
+
                 .surveyName(
-                        "Western Ghats Tiger Survey"
+                        "Bandipur Tiger Survey"
                 )
 
                 .description(
-                        "Camera trap based survey"
+                        "Camera trap based tiger monitoring"
                 )
 
                 .habitatType(
@@ -332,7 +224,7 @@ Species leopard =
                 )
 
                 .protectedArea(
-                        "Western Ghats"
+                        "Bandipur Tiger Reserve"
                 )
 
                 .surveyDate(
@@ -344,31 +236,35 @@ Species leopard =
                 )
 
                 .build()
-        );
+
+                );
 
 
 
-        Survey elephantSurvey =
+
+        Survey lionSurvey =
                 surveyRepository.save(
 
                 Survey.builder()
 
                 .user(user)
 
+                .location(gir)
+
                 .surveyName(
-                        "Nilgiri Elephant Survey"
+                        "Gir Lion Survey"
                 )
 
                 .description(
-                        "Migration monitoring survey"
+                        "Lion population monitoring"
                 )
 
                 .habitatType(
-                        "Mountain Forest"
+                        "Dry Forest"
                 )
 
                 .protectedArea(
-                        "Nilgiris"
+                        "Gir National Park"
                 )
 
                 .surveyDate(
@@ -380,180 +276,331 @@ Species leopard =
                 )
 
                 .build()
+
+                );
+
+
+
+
+
+
+        /*
+        ======================================
+        HABITAT WITH SURVEY MAPPING
+        ======================================
+        */
+
+
+        Habitat bandipurForest =
+
+                habitatRepository.save(
+
+                Habitat.builder()
+
+                .habitatName(
+                        "Bandipur Forest"
+                )
+
+                .habitatType(
+                        "Tropical Forest"
+                )
+
+                .vegetationType(
+                        "Evergreen Forest"
+                )
+
+                .description(
+                        "Tiger elephant ecosystem"
+                )
+
+                .habitatQualityScore(
+                        90.0
+                )
+
+                .degradationLevel(
+                        15.0
+                )
+
+                .vegetationDensity(
+                        85.0
+                )
+
+                .temperature(
+                        24.0
+                )
+
+                .humidity(
+                        80.0
+                )
+
+                .rainfall(
+                        250.0
+                )
+
+                .waterQuality(
+                        90.0
+                )
+
+                .airQuality(
+                        95.0
+                )
+
+                .suitabilityScore(
+                        92.0
+                )
+
+                .survey(
+                        tigerSurvey
+                )
+
+                .build()
+
+                );
+
+
+
+
+
+        Habitat girForest =
+
+                habitatRepository.save(
+
+                Habitat.builder()
+
+                .habitatName(
+                        "Gir Forest"
+                )
+
+                .habitatType(
+                        "Dry Forest"
+                )
+
+                .vegetationType(
+                        "Mixed Forest"
+                )
+
+                .description(
+                        "Asian lion ecosystem"
+                )
+
+                .habitatQualityScore(
+                        86.0
+                )
+
+                .degradationLevel(
+                        20.0
+                )
+
+                .vegetationDensity(
+                        75.0
+                )
+
+                .temperature(
+                        28.0
+                )
+
+                .humidity(
+                        65.0
+                )
+
+                .rainfall(
+                        150.0
+                )
+
+                .waterQuality(
+                        85.0
+                )
+
+                .airQuality(
+                        90.0
+                )
+
+                .suitabilityScore(
+                        88.0
+                )
+
+                .survey(
+                        lionSurvey
+                )
+
+                .build()
+
+                );
+
+
+
+
+
+
+
+        /*
+        ======================================
+        POPULATION ESTIMATION
+        ======================================
+        */
+
+
+        populationEstimateRepository.deleteAll();
+
+
+
+        populationEstimateRepository.save(
+
+        PopulationEstimate.builder()
+
+        .species(tiger)
+
+        .survey(tigerSurvey)
+
+        .estimatedPopulation(
+                96
+        )
+
+        .density(
+                new BigDecimal("8.5")
+        )
+
+        .growthRate(
+                new BigDecimal("4.5")
+        )
+
+        .migrationPattern(
+                "Forest Corridor Movement"
+        )
+
+        .build()
+
+        );
+
+
+
+
+        populationEstimateRepository.save(
+
+        PopulationEstimate.builder()
+
+        .species(lion)
+
+        .survey(lionSurvey)
+
+        .estimatedPopulation(
+                674
+        )
+
+        .density(
+                new BigDecimal("12.5")
+        )
+
+        .growthRate(
+                new BigDecimal("6.2")
+        )
+
+        .migrationPattern(
+                "Gir Landscape Movement"
+        )
+
+        .build()
+
         );
 
 
 
 
 
-        /*
-         * Population Estimates
-         */
-
-        if(populationEstimateRepository.count()<3){
-
-
-            populationEstimateRepository.save(
-
-            PopulationEstimate.builder()
-
-            .species(tiger)
-
-            .survey(tigerSurvey)
-
-            .estimatedPopulation(96)
-
-            .density(
-                    new BigDecimal("8.5")
-            )
-
-            .growthRate(
-                    new BigDecimal("4.5")
-            )
-
-            .migrationPattern(
-                    "Western Ghats to Nilgiris"
-            )
-
-            .build()
-            );
-
-
-
-            populationEstimateRepository.save(
-
-            PopulationEstimate.builder()
-
-            .species(elephant)
-
-            .survey(elephantSurvey)
-
-            .estimatedPopulation(142)
-
-            .density(
-                    new BigDecimal("12.5")
-            )
-
-            .growthRate(
-                    new BigDecimal("6.2")
-            )
-
-            .migrationPattern(
-                    "Nilgiris to Mudumalai"
-            )
-
-            .build()
-            );
-
-
-
-            populationEstimateRepository.save(
-
-            PopulationEstimate.builder()
-
-            .species(leopard)
-
-            .survey(tigerSurvey)
-
-            .estimatedPopulation(45)
-
-            .density(
-                    new BigDecimal("5.2")
-            )
-
-            .growthRate(
-                    new BigDecimal("2.8")
-            )
-
-            .migrationPattern(
-                    "Forest Corridor Movement"
-            )
-
-            .build()
-            );
-
-        }
-
-
-
-
 
         /*
-         * Biodiversity Scores
-         */
+        ======================================
+        BIODIVERSITY SCORE
+        ======================================
+        */
 
-        if(biodiversityScoreRepository.count()<2){
+
+        System.out.println("Deleting conservation recommendations...");
+
+recommendationRepository.deleteAll();
 
 
-            biodiversityScoreRepository.save(
+System.out.println("Deleting biodiversity scores...");
 
-            BiodiversityScore.builder()
-
-            .survey(tigerSurvey)
-
-            .habitat(westernGhats)
-
-            .speciesDiversityScore(
-                    new BigDecimal("92")
-            )
-
-            .habitatQualityScore(
-                    new BigDecimal("90")
-            )
-
-            .ecosystemHealthScore(
-                    new BigDecimal("91")
-            )
-
-            .overallScore(
-                    new BigDecimal("91")
-            )
-
-            .speciesCount(35)
-
-            .healthStatus(
-                    "Healthy"
-            )
-
-            .build()
-            );
+biodiversityScoreRepository.deleteAll();
 
 
 
-            biodiversityScoreRepository.save(
+        biodiversityScoreRepository.save(
 
-            BiodiversityScore.builder()
+        BiodiversityScore.builder()
 
-            .survey(elephantSurvey)
+        .survey(tigerSurvey)
 
-            .habitat(nilgiris)
+        .habitat(bandipurForest)
 
-            .speciesDiversityScore(
-                    new BigDecimal("85")
-            )
+        .speciesDiversityScore(
+                new BigDecimal("92")
+        )
 
-            .habitatQualityScore(
-                    new BigDecimal("86")
-            )
+        .habitatQualityScore(
+                new BigDecimal("90")
+        )
 
-            .ecosystemHealthScore(
-                    new BigDecimal("88")
-            )
+        .ecosystemHealthScore(
+                new BigDecimal("91")
+        )
 
-            .overallScore(
-                    new BigDecimal("87")
-            )
+        .overallScore(
+                new BigDecimal("91")
+        )
 
-            .speciesCount(28)
+        .speciesCount(
+                35
+        )
 
-            .healthStatus(
-                    "Healthy"
-            )
+        .healthStatus(
+                "Healthy"
+        )
 
-            .build()
-            );
+        .build()
 
-        }
+        );
+
+
+
+
+
+        biodiversityScoreRepository.save(
+
+        BiodiversityScore.builder()
+
+        .survey(lionSurvey)
+
+        .habitat(girForest)
+
+        .speciesDiversityScore(
+                new BigDecimal("85")
+        )
+
+        .habitatQualityScore(
+                new BigDecimal("86")
+        )
+
+        .ecosystemHealthScore(
+                new BigDecimal("88")
+        )
+
+        .overallScore(
+                new BigDecimal("87")
+        )
+
+        .speciesCount(
+                28
+        )
+
+        .healthStatus(
+                "Healthy"
+        )
+
+        .build()
+
+        );
 
 
 
