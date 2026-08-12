@@ -70,4 +70,26 @@ public class ReportController {
 
         return "Report deleted successfully";
     }
+    @Operation(
+summary="Generate intelligence report"
+)
+@PreAuthorize(
+"hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')"
+)
+@PostMapping("/generate")
+public ReportResponse generateReport(
+@RequestParam String type,
+@RequestParam Long surveyId,
+@RequestParam Long userId
+){
+
+
+return reportService.generateSystemReport(
+        type,
+        surveyId,
+        userId
+);
+
+
+}
 }

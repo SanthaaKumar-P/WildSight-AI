@@ -54,13 +54,19 @@ public class ObservationServiceImpl implements ObservationService {
     }
 
     @Override
-    public List<ObservationResponse> getAllObservations() {
+public List<ObservationResponse> getAllObservations() {
 
-        return observationRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
-    }
+
+return observationRepository.findAllWithDetails()
+
+.stream()
+
+.map(this::mapToResponse)
+
+.toList();
+
+
+}
 
     @Override
     public ObservationResponse getObservationById(Long id) {
@@ -115,29 +121,120 @@ public class ObservationServiceImpl implements ObservationService {
         observationRepository.delete(observation);
     }
 
-    private ObservationResponse mapToResponse(Observation observation) {
+    private ObservationResponse mapToResponse(
+        Observation observation) {
 
-        return ObservationResponse.builder()
-                .observationId(observation.getObservationId())
 
-                .surveyId(observation.getSurvey().getSurveyId())
-                .surveyName(observation.getSurvey().getSurveyName())
+return ObservationResponse.builder()
 
-                .speciesId(observation.getSpecies().getSpeciesId())
-                .commonName(observation.getSpecies().getCommonName())
+.observationId(
+observation.getObservationId()
+)
 
-                .locationId(observation.getLocation().getLocationId())
-                .locationName(observation.getLocation().getLocationName())
 
-                .deviceId(observation.getDevice().getDeviceId())
-                .deviceName(observation.getDevice().getDeviceName())
+.surveyId(
+observation.getSurvey()!=null
+?
+observation.getSurvey().getSurveyId()
+:
+null
+)
 
-                .observationTime(observation.getObservationTime())
-                .observerNotes(observation.getObserverNotes())
-                .weather(observation.getWeather())
-                .confidenceScore(observation.getConfidenceScore())
-                .imageCount(observation.getImageCount())
-                .audioCount(observation.getAudioCount())
-                .build();
-    }
+
+.surveyName(
+observation.getSurvey()!=null
+?
+observation.getSurvey().getSurveyName()
+:
+"Unknown"
+)
+
+
+.speciesId(
+observation.getSpecies()!=null
+?
+observation.getSpecies().getSpeciesId()
+:
+null
+)
+
+
+.commonName(
+observation.getSpecies()!=null
+?
+observation.getSpecies().getCommonName()
+:
+"Unknown"
+)
+
+
+.locationId(
+observation.getLocation()!=null
+?
+observation.getLocation().getLocationId()
+:
+null
+)
+
+
+.locationName(
+observation.getLocation()!=null
+?
+observation.getLocation().getLocationName()
+:
+"Unknown"
+)
+
+
+.deviceId(
+observation.getDevice()!=null
+?
+observation.getDevice().getDeviceId()
+:
+null
+)
+
+
+.deviceName(
+observation.getDevice()!=null
+?
+observation.getDevice().getDeviceName()
+:
+"Unknown"
+)
+
+
+.observationTime(
+observation.getObservationTime()
+)
+
+
+.observerNotes(
+observation.getObserverNotes()
+)
+
+
+.weather(
+observation.getWeather()
+)
+
+
+.confidenceScore(
+observation.getConfidenceScore()
+)
+
+
+.imageCount(
+observation.getImageCount()
+)
+
+
+.audioCount(
+observation.getAudioCount()
+)
+
+
+.build();
+
+}
 }

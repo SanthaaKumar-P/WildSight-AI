@@ -3,8 +3,12 @@ package com.wildsight.backend.serviceImpl;
 import com.wildsight.backend.dto.ReportRequest;
 import com.wildsight.backend.dto.ReportResponse;
 import com.wildsight.backend.entity.Report;
+import com.wildsight.backend.entity.ReportStatus;
 import com.wildsight.backend.entity.Survey;
 import com.wildsight.backend.entity.User;
+import com.wildsight.backend.repository.BiodiversityScoreRepository;
+import com.wildsight.backend.repository.HabitatRepository;
+import com.wildsight.backend.repository.PopulationEstimateRepository;
 import com.wildsight.backend.repository.ReportRepository;
 import com.wildsight.backend.repository.SurveyRepository;
 import com.wildsight.backend.repository.UserRepository;
@@ -21,6 +25,11 @@ public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
     private final SurveyRepository surveyRepository;
     private final UserRepository userRepository;
+    private final PopulationEstimateRepository populationRepository;
+
+private final BiodiversityScoreRepository biodiversityRepository;
+
+private final HabitatRepository habitatRepository;
 
     @Override
     public ReportResponse createReport(ReportRequest request) {
@@ -112,4 +121,106 @@ public class ReportServiceImpl implements ReportService {
                 .reportStatus(report.getReportStatus())
                 .build();
     }
+    @Override
+public ReportResponse generateSystemReport(
+        String type,
+        Long surveyId,
+        Long userId
+){
+
+
+Survey survey =
+surveyRepository.findById(surveyId)
+.orElseThrow(
+()->new RuntimeException("Survey not found")
+);
+
+
+
+User user =
+userRepository.findById(userId)
+.orElseThrow(
+()->new RuntimeException("User not found")
+);
+
+
+
+String title;
+
+
+switch(type.toUpperCase()){
+
+
+case "POPULATION":
+
+title="Wildlife Population Intelligence Report";
+
+break;
+
+
+
+case "BIODIVERSITY":
+
+title="Biodiversity Assessment Report";
+
+break;
+
+
+
+case "HABITAT":
+
+title="Habitat Health Analysis Report";
+
+break;
+
+
+
+case "CONSERVATION":
+
+title="Conservation Recommendation Report";
+
+break;
+
+
+
+default:
+
+throw new RuntimeException(
+"Invalid report type"
+);
+
+}
+
+
+
+
+Report report =
+Report.builder()
+
+.survey(survey)
+
+.generatedBy(user)
+
+.reportTitle(title)
+
+.reportType(type)
+
+.reportPath(
+"/reports/"+type.toLowerCase()
+)
+
+.reportStatus(
+ReportStatus.COMPLETED
+)
+
+.build();
+
+
+
+return mapToResponse(
+reportRepository.save(report)
+);
+
+
+}
 }

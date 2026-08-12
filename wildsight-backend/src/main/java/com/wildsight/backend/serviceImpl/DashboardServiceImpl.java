@@ -64,10 +64,11 @@ public class DashboardServiceImpl
 
                     catch(Exception e){
 
+    e.printStackTrace();
 
-                        intelligence = null;
+    intelligence = null;
 
-                    }
+}
 
 
 

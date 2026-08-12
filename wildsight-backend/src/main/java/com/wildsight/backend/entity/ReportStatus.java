@@ -4,6 +4,6 @@ public enum ReportStatus {
 
     GENERATING,
     READY,
-    FAILED
-
+    FAILED,
+    COMPLETED
 }

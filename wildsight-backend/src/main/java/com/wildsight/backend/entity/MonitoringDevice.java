@@ -16,13 +16,13 @@ public class MonitoringDevice {
     @Column(name = "device_id")
     private Long deviceId;
 
-    @ManyToOne
-    @JoinColumn(name = "survey_id", nullable = false)
-    private Survey survey;
+    @ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name = "survey_id", nullable = false)
+private Survey survey;
 
-    @ManyToOne
-    @JoinColumn(name = "device_type_id", nullable = false)
-    private DeviceType deviceType;
+    @ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name = "device_type_id", nullable = false)
+private DeviceType deviceType;
 
     @Column(name = "serial_number")
     private String serialNumber;
@@ -30,9 +30,9 @@ public class MonitoringDevice {
     @Column(name = "device_name")
     private String deviceName;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false)
-    private MonitoringLocation location;
+    @ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name = "location_id", nullable = false)
+private MonitoringLocation location;
 
     @Enumerated(EnumType.STRING)
     private DeviceStatus status;

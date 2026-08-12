@@ -18,9 +18,9 @@ public class MonitoringLocation {
     @Column(name = "location_id")
     private Long locationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_id", nullable = false)
-    private Survey survey;
+    @ManyToOne(fetch = FetchType.EAGER)
+@JoinColumn(name="survey_id", nullable = false)
+private Survey survey;
 
     @Column(name = "location_name")
     private String locationName;

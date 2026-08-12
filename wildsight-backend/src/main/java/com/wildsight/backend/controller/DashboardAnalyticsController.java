@@ -2,7 +2,10 @@ package com.wildsight.backend.controller;
 
 
 import com.wildsight.backend.dto.BiodiversityDashboardResponse;
+import com.wildsight.backend.dto.ConservationPriorityResponse;
 import com.wildsight.backend.dto.HabitatDashboardResponse;
+import com.wildsight.backend.dto.ThreatMonitoringResponse;
+import com.wildsight.backend.dto.UserManagementResponse;
 import com.wildsight.backend.dto.population.PopulationDashboardResponse;
 
 import com.wildsight.backend.service.DashboardAnalyticsService;
@@ -42,10 +45,6 @@ public class DashboardAnalyticsController {
 
     }
 
-
-
-
-
     // =====================================================
     // BIODIVERSITY ANALYTICS
     // =====================================================
@@ -81,6 +80,37 @@ public class DashboardAnalyticsController {
         );
 
     }
+    @GetMapping("/users")
+public ResponseEntity<UserManagementResponse>
+getUsers(){
 
+    return ResponseEntity.ok(
+        dashboardService.getUserManagement()
+    );
+
+}
+@GetMapping("/threat-monitoring")
+public ResponseEntity<ThreatMonitoringResponse>
+getThreatMonitoring(){
+
+
+return ResponseEntity.ok(
+        dashboardService
+        .getThreatMonitoring()
+);
+
+
+}
+@GetMapping("/conservation-priority")
+public ResponseEntity<ConservationPriorityResponse>
+getConservationPriority(){
+
+
+    return ResponseEntity.ok(
+        dashboardService
+        .getConservationPriority()
+    );
+
+}
 
 }

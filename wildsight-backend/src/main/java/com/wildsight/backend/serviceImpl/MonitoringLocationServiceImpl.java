@@ -41,13 +41,14 @@ public class MonitoringLocationServiceImpl implements MonitoringLocationService 
     }
 
     @Override
-    public List<MonitoringLocationResponse> getAllLocations() {
+public List<MonitoringLocationResponse> getAllLocations(){
 
-        return monitoringLocationRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
-    }
+    return monitoringLocationRepository
+            .findAllWithDetails()
+            .stream()
+            .map(this::mapToResponse)
+            .toList();
+}
 
     @Override
     public MonitoringLocationResponse getLocationById(Long id) {
@@ -90,18 +91,64 @@ public class MonitoringLocationServiceImpl implements MonitoringLocationService 
         monitoringLocationRepository.delete(location);
     }
 
-    private MonitoringLocationResponse mapToResponse(MonitoringLocation location) {
+    private MonitoringLocationResponse mapToResponse(
+        MonitoringLocation location){
 
-        return MonitoringLocationResponse.builder()
-                .locationId(location.getLocationId())
-                .surveyId(location.getSurvey().getSurveyId())
-                .surveyName(location.getSurvey().getSurveyName())
-                .locationName(location.getLocationName())
-                .latitude(location.getLatitude())
-                .longitude(location.getLongitude())
-                .district(location.getDistrict())
-                .state(location.getState())
-                .country(location.getCountry())
-                .build();
-    }
+
+    return MonitoringLocationResponse.builder()
+
+            .locationId(
+                    location.getLocationId()
+            )
+
+            .surveyId(
+                    location.getSurvey()!=null
+                    ?
+                    location.getSurvey().getSurveyId()
+                    :
+                    null
+            )
+
+
+            .surveyName(
+                    location.getSurvey()!=null
+                    ?
+                    location.getSurvey().getSurveyName()
+                    :
+                    "No Survey"
+            )
+
+
+            .locationName(
+                    location.getLocationName()
+            )
+
+
+            .latitude(
+                    location.getLatitude()
+            )
+
+
+            .longitude(
+                    location.getLongitude()
+            )
+
+
+            .district(
+                    location.getDistrict()
+            )
+
+
+            .state(
+                    location.getState()
+            )
+
+
+            .country(
+                    location.getCountry()
+            )
+
+            .build();
+
+}
 }

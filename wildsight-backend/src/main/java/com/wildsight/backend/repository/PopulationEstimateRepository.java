@@ -174,4 +174,28 @@ WHERE l.locationId = :locationId
 List<PopulationEstimate> findPopulationByLocation(
         @Param("locationId") Long locationId
 );
+@Query("""
+SELECT COUNT(p)
+FROM PopulationEstimate p
+WHERE p.growthRate > 5
+""")
+Long countIncreasingSpecies();
+
+
+
+@Query("""
+SELECT COUNT(p)
+FROM PopulationEstimate p
+WHERE p.growthRate BETWEEN 1 AND 5
+""")
+Long countStableSpecies();
+
+
+
+@Query("""
+SELECT COUNT(p)
+FROM PopulationEstimate p
+WHERE p.growthRate < 1
+""")
+Long countDecreasingSpecies();
 }

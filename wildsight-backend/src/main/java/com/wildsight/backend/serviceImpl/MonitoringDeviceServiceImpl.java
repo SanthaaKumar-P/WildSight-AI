@@ -52,13 +52,14 @@ public class MonitoringDeviceServiceImpl implements MonitoringDeviceService {
     }
 
     @Override
-    public List<MonitoringDeviceResponse> getAllDevices() {
+public List<MonitoringDeviceResponse> getAllDevices(){
 
-        return monitoringDeviceRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
-    }
+    return monitoringDeviceRepository
+            .findAllWithDetails()
+            .stream()
+            .map(this::mapToResponse)
+            .toList();
+}
 
     @Override
     public MonitoringDeviceResponse getDeviceById(Long id) {
@@ -106,24 +107,89 @@ public class MonitoringDeviceServiceImpl implements MonitoringDeviceService {
         monitoringDeviceRepository.delete(device);
     }
 
-    private MonitoringDeviceResponse mapToResponse(MonitoringDevice device) {
 
-        return MonitoringDeviceResponse.builder()
-                .deviceId(device.getDeviceId())
+    private MonitoringDeviceResponse mapToResponse(
+        MonitoringDevice device) {
 
-                .surveyId(device.getSurvey().getSurveyId())
-                .surveyName(device.getSurvey().getSurveyName())
 
-                .deviceTypeId(device.getDeviceType().getDeviceTypeId())
-                .deviceType(device.getDeviceType().getTypeName())
+    return MonitoringDeviceResponse.builder()
 
-                .serialNumber(device.getSerialNumber())
-                .deviceName(device.getDeviceName())
+            .deviceId(
+                    device.getDeviceId()
+            )
 
-                .locationId(device.getLocation().getLocationId())
-                .locationName(device.getLocation().getLocationName())
 
-                .status(device.getStatus())
-                .build();
-    }
+            .surveyId(
+                    device.getSurvey() != null
+                    ?
+                    device.getSurvey().getSurveyId()
+                    :
+                    null
+            )
+
+
+            .surveyName(
+                    device.getSurvey() != null
+                    ?
+                    device.getSurvey().getSurveyName()
+                    :
+                    "No Survey"
+            )
+
+
+            .deviceTypeId(
+                    device.getDeviceType() != null
+                    ?
+                    device.getDeviceType().getDeviceTypeId()
+                    :
+                    null
+            )
+
+
+            .deviceType(
+                    device.getDeviceType() != null
+                    ?
+                    device.getDeviceType().getTypeName()
+                    :
+                    "Unknown"
+            )
+
+
+            .serialNumber(
+                    device.getSerialNumber()
+            )
+
+
+            .deviceName(
+                    device.getDeviceName()
+            )
+
+
+            .locationId(
+                    device.getLocation() != null
+                    ?
+                    device.getLocation().getLocationId()
+                    :
+                    null
+            )
+
+
+            .locationName(
+                    device.getLocation() != null
+                    ?
+                    device.getLocation().getLocationName()
+                    :
+                    "Unknown"
+            )
+
+
+            .status(
+                    device.getStatus()
+            )
+
+
+            .build();
+}
+
+
 }

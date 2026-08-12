@@ -18,4 +18,10 @@ public interface ReportService {
             ReportRequest request);
 
     void deleteReport(Long id);
+
+    ReportResponse generateSystemReport(
+        String type,
+        Long surveyId,
+        Long userId
+);
 }
