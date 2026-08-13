@@ -4,18 +4,8 @@ import com.wildsight.backend.dto.UploadedImageRequest;
 import com.wildsight.backend.dto.UploadedImageResponse;
 import com.wildsight.backend.dto.ai.AnimalDetection;
 
-import com.wildsight.backend.entity.DetectionResult;
-import com.wildsight.backend.entity.Observation;
-import com.wildsight.backend.entity.Species;
-import com.wildsight.backend.entity.UploadedImage;
-import com.wildsight.backend.entity.User;
-
-import com.wildsight.backend.repository.DetectionResultRepository;
-import com.wildsight.backend.repository.ObservationRepository;
-import com.wildsight.backend.repository.SpeciesRepository;
-import com.wildsight.backend.repository.UploadedImageRepository;
-import com.wildsight.backend.repository.UserRepository;
-
+import com.wildsight.backend.entity.*;
+import com.wildsight.backend.repository.*;
 import com.wildsight.backend.service.AIService;
 import com.wildsight.backend.service.UploadedImageService;
 
@@ -33,10 +23,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UploadedImageServiceImpl 
-        implements UploadedImageService {
+public class UploadedImageServiceImpl implements UploadedImageService {
 
-   private final SpeciesRepository speciesRepository;
+
+    private final SpeciesRepository speciesRepository;
 
     private final UploadedImageRepository uploadedImageRepository;
 
@@ -47,148 +37,6 @@ public class UploadedImageServiceImpl
     private final AIService aiService;
 
     private final DetectionResultRepository detectionResultRepository;
-
-
-
-
-    // ================= CRUD =================
-
-
-    @Override
-    public UploadedImageResponse uploadImage(
-            UploadedImageRequest request) {
-
-
-        Observation observation =
-                observationRepository.findById(
-                        request.getObservationId()
-                )
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Observation not found"
-                        )
-                );
-
-
-        User user =
-                userRepository.findById(
-                        request.getUploadedBy()
-                )
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
-                );
-
-
-
-        UploadedImage image =
-                UploadedImage.builder()
-
-                .observation(observation)
-
-                .fileName(
-                        request.getFileName()
-                )
-
-                .filePath(
-                        request.getFilePath()
-                )
-
-                .capturedAt(
-                        request.getCapturedAt()
-                )
-
-                .fileSize(
-                        request.getFileSize()
-                )
-
-                .uploadedBy(user)
-
-                .imageQuality(
-                        request.getImageQuality()
-                )
-
-                .build();
-
-
-
-        image =
-        uploadedImageRepository.save(image);
-
-
-
-        return mapToResponse(image);
-
-    }
-
-
-
-
-
-    @Override
-    public List<UploadedImageResponse> getAllImages() {
-
-
-        return uploadedImageRepository.findAll()
-
-                .stream()
-
-                .map(this::mapToResponse)
-
-                .toList();
-
-    }
-
-
-
-
-
-
-    @Override
-    public UploadedImageResponse getImageById(Long id) {
-
-
-        UploadedImage image =
-                uploadedImageRepository.findById(id)
-
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Image not found"
-                        )
-                );
-
-
-        return mapToResponse(image);
-
-    }
-
-
-
-
-
-
-    @Override
-    public void deleteImage(Long id) {
-
-
-        UploadedImage image =
-                uploadedImageRepository.findById(id)
-
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Image not found"
-                        )
-                );
-
-
-        uploadedImageRepository.delete(image);
-
-    }
-
-
-
-
 
 
 
@@ -214,24 +62,17 @@ public class UploadedImageServiceImpl
 
         Observation observation =
                 observationRepository.findById(observationId)
-
                 .orElseThrow(
-                        () -> new RuntimeException(
-                                "Observation not found"
-                        )
+                        () -> new RuntimeException("Observation not found")
                 );
 
 
 
         User user =
                 userRepository.findById(uploadedBy)
-
                 .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
+                        () -> new RuntimeException("User not found")
                 );
-
 
 
 
@@ -242,9 +83,7 @@ public class UploadedImageServiceImpl
                 );
 
 
-        Files.createDirectories(
-                uploadPath
-        );
+        Files.createDirectories(uploadPath);
 
 
 
@@ -261,20 +100,14 @@ public class UploadedImageServiceImpl
 
 
         Files.copy(
-
                 file.getInputStream(),
-
                 path,
-
                 StandardCopyOption.REPLACE_EXISTING
-
         );
 
 
 
-
         UploadedImage image =
-
                 UploadedImage.builder()
 
                 .observation(observation)
@@ -310,78 +143,93 @@ public class UploadedImageServiceImpl
 
 
 
-
-        // ================= AI CALL =================
-
-String predictedSpecies =
-        aiService.predictImage(
-                path.toFile()
-        );
+        // ================= AI DETECTION =================
 
 
-AnimalDetection detection =
-        aiService.detectAnimals(
-                path.toFile()
-        );
-
-
-
-// ================= UPDATE SPECIES DATABASE =================
-
-
-if(detection.getDetections()!=null)
-{
-
-    detection.getDetections()
-    .forEach(animal -> {
-
-
-        boolean exists =
-                speciesRepository
-                .existsByCommonNameIgnoreCase(
-                        animal.getSpecies()
+        AnimalDetection detection =
+                aiService.detectAnimals(
+                        path.toFile()
                 );
 
 
-        if(!exists)
+
+        if(detection == null)
+        {
+            throw new RuntimeException(
+                    "AI detection failed"
+            );
+        }
+
+
+
+        // ================= SAVE SPECIES =================
+
+
+        if(detection.getDetections()!=null)
         {
 
-            Species newSpecies =
-                    Species.builder()
-
-                    .commonName(
-                            animal.getSpecies()
-                    )
-
-                    .scientificName(
-                            animal.getScientificName()
-                    )
-
-                    .conservationStatus(
-                            animal.getSpeciesStatus()
-                    )
-
-                    .iucnStatus(
-                            animal.getSpeciesStatus()
-                    )
-
-                    .description(
-                            "Automatically identified by AI image analysis"
-                    )
-
-                    .build();
+            detection.getDetections()
+            .forEach(animal -> {
 
 
 
-            speciesRepository.save(newSpecies);
+                boolean exists =
+                        speciesRepository
+                        .existsByCommonNameIgnoreCase(
+                                animal.getSpecies()
+                        );
+
+
+
+                if(!exists)
+                {
+
+
+                    Species species =
+                            Species.builder()
+
+                            .categoryId(
+                                    getCategoryId(
+                                    animal.getSpecies()
+                                    )
+                            )
+
+                            .commonName(
+                                    animal.getSpecies()
+                            )
+
+                            .scientificName(
+                                    animal.getScientificName()
+                            )
+
+                            .conservationStatus(
+                                    animal.getSpeciesStatus()
+                            )
+
+                            .iucnStatus(
+                                    animal.getSpeciesStatus()
+                            )
+
+                            .description(
+                                    "Automatically identified by AI image analysis"
+                            )
+
+                            .build();
+
+
+
+                    speciesRepository.save(species);
+
+                }
+
+
+
+            });
 
         }
 
 
-    });
 
-}
-   
 
         // ================= SAVE DETECTION RESULT =================
 
@@ -389,13 +237,13 @@ if(detection.getDetections()!=null)
         if(detection.getDetections()!=null)
         {
 
+
             detection.getDetections()
-            
             .forEach(animal -> {
 
 
-                DetectionResult result =
 
+                DetectionResult result =
                         DetectionResult.builder()
 
                         .observation(
@@ -459,8 +307,8 @@ if(detection.getDetections()!=null)
 
             });
 
-        }
 
+        }
 
 
 
@@ -504,11 +352,6 @@ if(detection.getDetections()!=null)
                         image.getImageQuality()
                 )
 
-
-                .predictedSpecies(
-                        predictedSpecies
-                )
-
                 .animalCount(
                         detection.getAnimalCount()
                 )
@@ -532,58 +375,129 @@ if(detection.getDetections()!=null)
 
 
 
+    // ================= CATEGORY MAPPING =================
+
+
+    private Long getCategoryId(String species)
+    {
+
+        if(species==null)
+            return 11L;
+
+
+        species =
+                species.toLowerCase();
+
+
+
+        if(
+            species.contains("flamingo") ||
+            species.contains("owl") ||
+            species.contains("hornbill") ||
+            species.contains("woodpecker") ||
+            species.contains("hummingbird") ||
+            species.contains("sandpiper") ||
+            species.contains("bird")
+        )
+        {
+            return 2L;
+        }
+
+
+
+        if(
+            species.contains("tiger") ||
+            species.contains("lion") ||
+            species.contains("elephant") ||
+            species.contains("leopard") ||
+            species.contains("bear")
+        )
+        {
+            return 1L;
+        }
+
+
+
+        if(
+            species.contains("snake") ||
+            species.contains("lizard")
+        )
+        {
+            return 3L;
+        }
+
+
+
+        return 11L;
+
+    }
+
+
+
+
+    @Override
+    public UploadedImageResponse uploadImage(
+            UploadedImageRequest request) {
+
+        throw new UnsupportedOperationException(
+                "Use multipart upload"
+        );
+    }
+
+
+
+    @Override
+    public List<UploadedImageResponse> getAllImages() {
+
+        return uploadedImageRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+
+    }
 
 
 
     private UploadedImageResponse mapToResponse(
-            UploadedImage image) {
-
+            UploadedImage image)
+    {
 
         return UploadedImageResponse.builder()
-
 
                 .imageId(
                         image.getImageId()
                 )
-
 
                 .observationId(
                         image.getObservation()
                         .getObservationId()
                 )
 
-
                 .uploadedBy(
                         image.getUploadedBy()
                         .getUserId()
                 )
-
 
                 .uploaderName(
                         image.getUploadedBy()
                         .getFullName()
                 )
 
-
                 .fileName(
                         image.getFileName()
                 )
-
 
                 .filePath(
                         image.getFilePath()
                 )
 
-
                 .capturedAt(
                         image.getCapturedAt()
                 )
 
-
                 .fileSize(
                         image.getFileSize()
                 )
-
 
                 .imageQuality(
                         image.getImageQuality()
@@ -595,12 +509,38 @@ if(detection.getDetections()!=null)
 
 
 
+    @Override
+    public UploadedImageResponse getImageById(Long id)
+    {
+        UploadedImage image =
+                uploadedImageRepository.findById(id)
+                .orElseThrow(
+                        ()->new RuntimeException(
+                                "Image not found"
+                        )
+                );
+
+        return mapToResponse(image);
+    }
+
 
 
     @Override
-    public UploadedImageResponse updateImage(Long id, UploadedImageRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateImage'");
+    public void deleteImage(Long id)
+    {
+        uploadedImageRepository.deleteById(id);
+    }
+
+
+
+    @Override
+    public UploadedImageResponse updateImage(
+            Long id,
+            UploadedImageRequest request)
+    {
+        throw new UnsupportedOperationException(
+                "Not implemented"
+        );
     }
 
 }
