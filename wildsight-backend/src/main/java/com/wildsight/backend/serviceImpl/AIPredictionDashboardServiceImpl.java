@@ -1,7 +1,7 @@
 package com.wildsight.backend.serviceImpl;
 
-
 import com.wildsight.backend.dto.AIPredictionDashboardResponse;
+import com.wildsight.backend.entity.AIPrediction;
 import com.wildsight.backend.repository.AIPredictionRepository;
 import com.wildsight.backend.service.AIPredictionDashboardService;
 
@@ -9,56 +9,46 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
 public class AIPredictionDashboardServiceImpl
-implements AIPredictionDashboardService{
+        implements AIPredictionDashboardService {
 
+    private final AIPredictionRepository repository;
 
-private final AIPredictionRepository repository;
+    @Override
+    public List<AIPredictionDashboardResponse> getRecentPredictions() {
 
+        return repository
+                .findTop6ByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
 
+    private AIPredictionDashboardResponse mapToResponse(
+            AIPrediction prediction) {
 
-@Override
-public List<AIPredictionDashboardResponse> getRecentPredictions(){
+        return AIPredictionDashboardResponse.builder()
 
+                .id(prediction.getId())
 
-return repository
-.findTop6ByOrderByCreatedAtDesc()
-.stream()
-.map(p ->
+                .species(prediction.getSpecies())
 
-AIPredictionDashboardResponse.builder()
+                .confidence(prediction.getConfidence())
 
-.id(p.getId())
+                .location(prediction.getLocation())
 
-.species(p.getSpecies())
+                .researcher(prediction.getResearcher())
 
-.confidence(p.getConfidence())
+                .date(
+                        prediction.getCreatedAt() != null
+                                ? prediction.getCreatedAt().toString()
+                                : ""
+                )
 
-.location(p.getLocation())
-
-.researcher(p.getResearcher())
-
-.date(
-p.getCreatedAt()!=null
-?
-p.getCreatedAt().toString()
-:
-""
-)
-
-.build()
-
-)
-.toList();
-
-
-}
-
-
+                .build();
+    }
 }

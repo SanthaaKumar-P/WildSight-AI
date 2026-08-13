@@ -19,4 +19,10 @@ public interface ReportExportService {
             ReportExportRequest request);
 
     void deleteExport(Long id);
+
+    byte[] downloadExport(Long id);
+
+    String getDownloadFileName(Long id);
+
+    String getContentType(Long id);
 }

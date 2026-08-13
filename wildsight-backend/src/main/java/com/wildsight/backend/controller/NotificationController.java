@@ -1,5 +1,5 @@
 package com.wildsight.backend.controller;
-
+import com.wildsight.backend.service.AlertService;
 import com.wildsight.backend.dto.NotificationRequest;
 import com.wildsight.backend.dto.NotificationResponse;
 import com.wildsight.backend.service.NotificationService;
@@ -23,7 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    
+    private final AlertService alertService;
     @Operation(summary = "Create notification")
     @PreAuthorize("hasAnyRole('ADMIN','RESEARCHER')")
     @PostMapping
@@ -70,4 +70,13 @@ public class NotificationController {
 
         return "Notification deleted successfully";
     }
+    @Operation(summary = "Generate wildlife alerts")
+@PreAuthorize("hasAnyRole('ADMIN','RESEARCHER','FOREST_OFFICER')")
+@PostMapping("/generate-alerts")
+public String generateAlerts() {
+
+    alertService.generateAlerts();
+
+    return "Wildlife alerts generated successfully";
+}
 }

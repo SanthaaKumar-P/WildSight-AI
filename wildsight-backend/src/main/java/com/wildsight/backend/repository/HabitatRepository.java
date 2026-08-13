@@ -190,5 +190,5 @@ WHERE l.locationId = :locationId
 List<Habitat> findHabitatByLocation(
         @Param("locationId") Long locationId
 );
-
+List<Habitat> findBySurveySurveyId(Long surveyId);
 }
