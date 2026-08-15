@@ -2,10 +2,20 @@ package com.wildsight.backend.serviceImpl;
 
 import com.wildsight.backend.dto.ObservationRequest;
 import com.wildsight.backend.dto.ObservationResponse;
-import com.wildsight.backend.entity.*;
-import com.wildsight.backend.repository.*;
+import com.wildsight.backend.entity.MonitoringDevice;
+import com.wildsight.backend.entity.MonitoringLocation;
+import com.wildsight.backend.entity.Observation;
+import com.wildsight.backend.entity.Species;
+import com.wildsight.backend.entity.Survey;
+import com.wildsight.backend.repository.MonitoringDeviceRepository;
+import com.wildsight.backend.repository.MonitoringLocationRepository;
+import com.wildsight.backend.repository.ObservationRepository;
+import com.wildsight.backend.repository.SpeciesRepository;
+import com.wildsight.backend.repository.SurveyRepository;
 import com.wildsight.backend.service.ObservationService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,221 +30,380 @@ public class ObservationServiceImpl implements ObservationService {
     private final MonitoringLocationRepository monitoringLocationRepository;
     private final MonitoringDeviceRepository monitoringDeviceRepository;
 
+
+    // ============================================================
+    // CREATE OBSERVATION
+    // ============================================================
+
     @Override
-    public ObservationResponse createObservation(ObservationRequest request) {
+    public ObservationResponse createObservation(
+            ObservationRequest request) {
 
-        Survey survey = surveyRepository.findById(request.getSurveyId())
-                .orElseThrow(() -> new RuntimeException("Survey not found"));
+        Survey survey = surveyRepository
+                .findById(request.getSurveyId())
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Survey not found"
+                        )
+                );
 
-        Species species = speciesRepository.findById(request.getSpeciesId())
-                .orElseThrow(() -> new RuntimeException("Species not found"));
 
-        MonitoringLocation location = monitoringLocationRepository.findById(request.getLocationId())
-                .orElseThrow(() -> new RuntimeException("Location not found"));
+        Species species = speciesRepository
+                .findById(request.getSpeciesId())
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Species not found"
+                        )
+                );
 
-        MonitoringDevice device = monitoringDeviceRepository.findById(request.getDeviceId())
-                .orElseThrow(() -> new RuntimeException("Device not found"));
 
-        Observation observation = Observation.builder()
-                .survey(survey)
-                .species(species)
-                .location(location)
-                .device(device)
-                .observationTime(request.getObservationTime())
-                .observerNotes(request.getObserverNotes())
-                .weather(request.getWeather())
-                .confidenceScore(request.getConfidenceScore())
-                .imageCount(request.getImageCount())
-                .audioCount(request.getAudioCount())
-                .build();
+        MonitoringLocation location =
+                monitoringLocationRepository
+                        .findById(request.getLocationId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Location not found"
+                                )
+                        );
 
-        observation = observationRepository.save(observation);
+
+        MonitoringDevice device =
+                monitoringDeviceRepository
+                        .findById(request.getDeviceId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Device not found"
+                                )
+                        );
+
+
+        Observation observation =
+                Observation.builder()
+
+                        .survey(survey)
+
+                        .species(species)
+
+                        .location(location)
+
+                        .device(device)
+
+                        .observationTime(
+                                request.getObservationTime()
+                        )
+
+                        .observerNotes(
+                                request.getObserverNotes()
+                        )
+
+                        .weather(
+                                request.getWeather()
+                        )
+
+                        .confidenceScore(
+                                request.getConfidenceScore()
+                        )
+
+                        .imageCount(
+                                request.getImageCount()
+                        )
+
+                        .audioCount(
+                                request.getAudioCount()
+                        )
+
+                        .build();
+
+
+        observation =
+                observationRepository.save(
+                        observation
+                );
+
 
         return mapToResponse(observation);
     }
 
-    @Override
-public List<ObservationResponse> getAllObservations() {
 
-
-return observationRepository.findAllWithDetails()
-
-.stream()
-
-.map(this::mapToResponse)
-
-.toList();
-
-
-}
+    // ============================================================
+    // GET ALL OBSERVATIONS
+    // ============================================================
 
     @Override
-    public ObservationResponse getObservationById(Long id) {
+    public List<ObservationResponse> getAllObservations() {
 
-        Observation observation = observationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Observation not found"));
+        return observationRepository
+                .findAllByOrderByObservationIdDesc()
+
+                .stream()
+
+                .map(this::mapToResponse)
+
+                .toList();
+    }
+
+
+    // ============================================================
+    // GET OBSERVATION BY ID
+    // ============================================================
+
+    @Override
+    public ObservationResponse getObservationById(
+            Long id) {
+
+        Observation observation =
+                observationRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Observation not found"
+                                )
+                        );
+
 
         return mapToResponse(observation);
     }
 
+
+    // ============================================================
+    // UPDATE OBSERVATION
+    // ============================================================
+
     @Override
-    public ObservationResponse updateObservation(Long id,
-                                                 ObservationRequest request) {
+    public ObservationResponse updateObservation(
+            Long id,
+            ObservationRequest request) {
 
-        Observation observation = observationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Observation not found"));
 
-        Survey survey = surveyRepository.findById(request.getSurveyId())
-                .orElseThrow(() -> new RuntimeException("Survey not found"));
+        Observation observation =
+                observationRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Observation not found"
+                                )
+                        );
 
-        Species species = speciesRepository.findById(request.getSpeciesId())
-                .orElseThrow(() -> new RuntimeException("Species not found"));
 
-        MonitoringLocation location = monitoringLocationRepository.findById(request.getLocationId())
-                .orElseThrow(() -> new RuntimeException("Location not found"));
+        Survey survey =
+                surveyRepository
+                        .findById(request.getSurveyId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Survey not found"
+                                )
+                        );
 
-        MonitoringDevice device = monitoringDeviceRepository.findById(request.getDeviceId())
-                .orElseThrow(() -> new RuntimeException("Device not found"));
+
+        Species species =
+                speciesRepository
+                        .findById(request.getSpeciesId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Species not found"
+                                )
+                        );
+
+
+        MonitoringLocation location =
+                monitoringLocationRepository
+                        .findById(request.getLocationId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Location not found"
+                                )
+                        );
+
+
+        MonitoringDevice device =
+                monitoringDeviceRepository
+                        .findById(request.getDeviceId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Device not found"
+                                )
+                        );
+
 
         observation.setSurvey(survey);
+
         observation.setSpecies(species);
+
         observation.setLocation(location);
+
         observation.setDevice(device);
-        observation.setObservationTime(request.getObservationTime());
-        observation.setObserverNotes(request.getObserverNotes());
-        observation.setWeather(request.getWeather());
-        observation.setConfidenceScore(request.getConfidenceScore());
-        observation.setImageCount(request.getImageCount());
-        observation.setAudioCount(request.getAudioCount());
+
+        observation.setObservationTime(
+                request.getObservationTime()
+        );
+
+        observation.setObserverNotes(
+                request.getObserverNotes()
+        );
+
+        observation.setWeather(
+                request.getWeather()
+        );
+
+        observation.setConfidenceScore(
+                request.getConfidenceScore()
+        );
+
+        observation.setImageCount(
+                request.getImageCount()
+        );
+
+        observation.setAudioCount(
+                request.getAudioCount()
+        );
+
 
         observationRepository.save(observation);
 
+
         return mapToResponse(observation);
     }
+
+
+    // ============================================================
+    // DELETE OBSERVATION
+    // ============================================================
 
     @Override
     public void deleteObservation(Long id) {
 
-        Observation observation = observationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Observation not found"));
+        Observation observation =
+                observationRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Observation not found"
+                                )
+                        );
+
 
         observationRepository.delete(observation);
     }
 
+
+    // ============================================================
+    // ENTITY → RESPONSE
+    // ============================================================
+
     private ObservationResponse mapToResponse(
-        Observation observation) {
+            Observation observation) {
 
 
-return ObservationResponse.builder()
-
-.observationId(
-observation.getObservationId()
-)
+        return ObservationResponse.builder()
 
 
-.surveyId(
-observation.getSurvey()!=null
-?
-observation.getSurvey().getSurveyId()
-:
-null
-)
+                .observationId(
+                        observation.getObservationId()
+                )
 
 
-.surveyName(
-observation.getSurvey()!=null
-?
-observation.getSurvey().getSurveyName()
-:
-"Unknown"
-)
+                .surveyId(
+                        observation.getSurvey() != null
+                                ? observation
+                                    .getSurvey()
+                                    .getSurveyId()
+                                : null
+                )
 
 
-.speciesId(
-observation.getSpecies()!=null
-?
-observation.getSpecies().getSpeciesId()
-:
-null
-)
+                .surveyName(
+                        observation.getSurvey() != null
+                                ? observation
+                                    .getSurvey()
+                                    .getSurveyName()
+                                : "Unknown"
+                )
 
 
-.commonName(
-observation.getSpecies()!=null
-?
-observation.getSpecies().getCommonName()
-:
-"Unknown"
-)
+                .speciesId(
+                        observation.getSpecies() != null
+                                ? observation
+                                    .getSpecies()
+                                    .getSpeciesId()
+                                : null
+                )
 
 
-.locationId(
-observation.getLocation()!=null
-?
-observation.getLocation().getLocationId()
-:
-null
-)
+                .commonName(
+                        observation.getSpecies() != null
+                                ? observation
+                                    .getSpecies()
+                                    .getCommonName()
+                                : "Unknown"
+                )
 
 
-.locationName(
-observation.getLocation()!=null
-?
-observation.getLocation().getLocationName()
-:
-"Unknown"
-)
+                .locationId(
+                        observation.getLocation() != null
+                                ? observation
+                                    .getLocation()
+                                    .getLocationId()
+                                : null
+                )
 
 
-.deviceId(
-observation.getDevice()!=null
-?
-observation.getDevice().getDeviceId()
-:
-null
-)
+                .locationName(
+                        observation.getLocation() != null
+                                ? observation
+                                    .getLocation()
+                                    .getLocationName()
+                                : "Unknown"
+                )
 
 
-.deviceName(
-observation.getDevice()!=null
-?
-observation.getDevice().getDeviceName()
-:
-"Unknown"
-)
+                .deviceId(
+                        observation.getDevice() != null
+                                ? observation
+                                    .getDevice()
+                                    .getDeviceId()
+                                : null
+                )
 
 
-.observationTime(
-observation.getObservationTime()
-)
+                .deviceName(
+                        observation.getDevice() != null
+                                ? observation
+                                    .getDevice()
+                                    .getDeviceName()
+                                : "Unknown"
+                )
 
 
-.observerNotes(
-observation.getObserverNotes()
-)
+                .observationTime(
+                        observation.getObservationTime()
+                )
 
 
-.weather(
-observation.getWeather()
-)
+                .observerNotes(
+                        observation.getObserverNotes()
+                )
 
 
-.confidenceScore(
-observation.getConfidenceScore()
-)
+                .weather(
+                        observation.getWeather()
+                )
 
 
-.imageCount(
-observation.getImageCount()
-)
+                .confidenceScore(
+                        observation.getConfidenceScore()
+                )
 
 
-.audioCount(
-observation.getAudioCount()
-)
+                .imageCount(
+                        observation.getImageCount()
+                )
 
 
-.build();
+                .audioCount(
+                        observation.getAudioCount()
+                )
 
-}
+
+                .build();
+    }
 }
